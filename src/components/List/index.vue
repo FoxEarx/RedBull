@@ -2,8 +2,9 @@
   <div class="MainData">
     <template>
       <el-table :data="tableData" style="width: 100%">
+        <el-table-column type="selection" v-if="checkShow"> </el-table-column>
         <el-table-column
-          type="index"
+          prop="index"
           label="序号"
           width="100px"
         ></el-table-column>
@@ -15,9 +16,9 @@
           :width="width"
         >
         </el-table-column>
-        <el-table-column label="图片">
+        <!-- <el-table-column label="图片">
           <slot name="img"></slot>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作">
           <slot name="operation"></slot>
         </el-table-column>
@@ -48,6 +49,10 @@ export default {
     width: {
       type: String,
       default: '200px',
+    },
+    checkShow: {
+      type: Boolean,
+      default: false,
     },
   },
 }
