@@ -1,14 +1,15 @@
 #app {
   .main-container {
-    // min-height: 100%;
+    min-height: 100%;
     transition: margin-left 0.28s;
     margin-left: $sideBarWidth;
     position: relative;
+    background-color: #f8fafd;
   }
 
   .sidebar-container {
     transition: width 0.28s;
-    // width: $sideBarWidth !important;
+    width: $sideBarWidth !important;
     background-color: #fff;
     height: 100%;
     position: fixed;
@@ -28,9 +29,9 @@
     .scrollbar-wrapper {
       overflow-x: hidden !important;
     }
-    .el-scrollbar {
-      width: 167px;
-    }
+    // .el-scrollbar {
+    //   width: 167px;
+    // }
     // .el-scrollbar__wrap {
     //   width: 167px;
     // }
@@ -91,6 +92,7 @@
       min-width: initial;
       background-color: $subMenuBg !important;
       color: #999;
+      padding-left: 51px !important;
 
       &:hover {
         background-color: $subMenuHover !important;
