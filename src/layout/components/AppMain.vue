@@ -12,21 +12,23 @@ export default {
   computed: {
     key() {
       return this.$route.path
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style scoped>
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 50px);
+  /* min-height: calc(100vh - 50px); */
   width: 100%;
   position: relative;
   overflow: hidden;
+  padding: 20px;
+  background-color: #f8fafd;
 }
-.fixed-header+.app-main {
-  padding-top: 50px;
+.fixed-header + .app-main {
+  padding-top: 60px;
 }
 </style>
 

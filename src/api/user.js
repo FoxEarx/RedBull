@@ -1,24 +1,37 @@
 import request from '@/utils/request'
 
+/**
+ * 登录接口
+ * @param {Object} data loginAccount loginpassword loginValidation
+ * @returns promise
+ */
 export function login(data) {
   return request({
-    url: '/vue-admin-template/user/login',
-    method: 'post',
-    data
+    url: '/user-service/user/login',
+    method: 'POST',
+    data,
   })
 }
 
-export function getInfo(token) {
+/**
+ * 验证码请求
+ * @param {Number} Validation
+ * @returns promise
+ */
+export function loginValidation(Validation) {
   return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
+    url: `/user-service/user/imageCode/${Validation}`,
+    responseType: 'arraybuffer',
   })
 }
 
-export function logout() {
+/**
+ *  获取用户基本信息
+ * @param {Number} id
+ * @returns promise
+ */
+export function userInfo(id) {
   return request({
-    url: '/vue-admin-template/user/logout',
-    method: 'post'
+    url: `/user-service/user/${id}`,
   })
 }
