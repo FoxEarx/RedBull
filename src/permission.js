@@ -14,6 +14,10 @@ router.beforeEach(async (to, from, next) => {
       await store.dispatch('order/getOrder')
     }
 
+    if (!store.state.equipment.AllEquipment) {
+      await store.dispatch('equipment/getEquipment')
+    }
+
     if (to.path === '/login') {
       next('/')
     } else {

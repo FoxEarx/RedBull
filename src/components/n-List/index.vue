@@ -1,13 +1,9 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="a">
-        <el-table-column type="index" label="序号"></el-table-column>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="selection" v-if="checkShow"> </el-table-column>
       <el-table :data="tableData" style="width: 100%" @row-click="row">
         <el-table-column
-          prop="index"
+          type="index"
           label="序号"
           width="100px"
         ></el-table-column>
@@ -21,7 +17,7 @@
         <!-- <el-table-column label="图片">
           <slot name="img"></slot>
         </el-table-column> -->
-        <el-table-column label="操作">
+        <el-table-column label="操作" v-if="show">
           <slot name="operation"></slot>
         </el-table-column>
       </el-table>
@@ -38,7 +34,9 @@ export default {
   created() {},
 
   methods: {
-
+    row(row) {
+      console.log(row)
+    },
   },
   props: {
     //行数
@@ -54,11 +52,11 @@ export default {
       type: String,
       default: '200px',
     },
-    checkShow: {
+    show: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
   },
-}
 }
 </script>
 
