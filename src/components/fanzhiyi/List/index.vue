@@ -1,21 +1,14 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="a">
-        <el-table-column type="index" label="序号"></el-table-column>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="selection" v-if="checkShow"> </el-table-column>
-      <el-table :data="tableData" style="width: 100%" @row-click="row">
-        <el-table-column
-          prop="index"
-          label="序号"
-          width="100px"
-        ></el-table-column>
+      <el-table :data="tableData" style="width: 100%" @row-click="currentId">
+        <el-table-column type="index" label="序号" min-width></el-table-column>
         <el-table-column
           v-for="(item, index) in table"
           :key="index"
           :prop="item.prop"
           :label="item.label"
+          min-width
         >
         </el-table-column>
         <!-- <el-table-column label="图片">
@@ -32,13 +25,18 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      orderId: '',
+    }
   },
 
   created() {},
 
   methods: {
-
+    currentId(row) {
+      this.order = row.orderNo
+      this.$emit('pushid', this.order)
+    },
   },
   props: {
     //行数
@@ -54,11 +52,7 @@ export default {
       type: String,
       default: '200px',
     },
-    checkShow: {
-      type: Boolean,
-      default: false,
   },
-}
 }
 </script>
 

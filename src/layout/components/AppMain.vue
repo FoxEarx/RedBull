@@ -26,9 +26,10 @@ export default {
   overflow: hidden;
   padding: 20px;
   background-color: #f8fafd;
+  padding-top: 60px;
 }
 .fixed-header + .app-main {
-  padding-top: 60px;
+  padding-top: 50px;
 }
 </style>
 
