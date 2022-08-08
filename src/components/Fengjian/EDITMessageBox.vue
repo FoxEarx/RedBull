@@ -1,11 +1,8 @@
 <template>
   <div>
-    <AddButton color="orange" hover="orange:hover" @Add="Add"
-      ><i class="el-icon-circle-plus-outline"></i> 新建</AddButton
-    >
     <el-dialog
       :title="title"
-      :visible.sync="dialogVisible"
+      :visible.sync="isShow"
       width="30%"
       :before-close="handleClose"
     >
@@ -20,7 +17,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="$emit('cancel')">取 消</el-button>
         <el-button type="primary" @click="addCommodity">确 定</el-button>
         <!-- dialogVisible = false -->
       </span>
@@ -29,13 +26,16 @@
 </template>
 
 <script>
-import AddButton from './Addbutton.vue'
-import { getAddCommodity } from '@/api/CommodityType'
+import { getAddCommodity, getEditCommodity } from '@/api/CommodityType'
 export default {
   props: {
     title: {
       type: String,
       default: '提示',
+    },
+    isShow: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -47,8 +47,8 @@ export default {
       className: '',
     }
   },
-  components: {
-    AddButton,
+  created() {
+    console.log(this.isShow)
   },
   methods: {
     onSubmit() {

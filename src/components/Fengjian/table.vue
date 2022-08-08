@@ -21,7 +21,12 @@
       width="100"
       v-if="isOeration === true"
     >
-      <el-button type="text" size="small">修改</el-button>
+      <el-button
+        type="text"
+        size="small"
+        @click.native="$emit('edit', tableData)"
+        >修改</el-button
+      >
       <el-button type="text" size="small" class="del" @click.native="open"
         >删除</el-button
       >

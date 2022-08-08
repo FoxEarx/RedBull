@@ -19,8 +19,14 @@
 
     <!-- 主体区域 -->
     <el-card class="main" shadow="never">
-      <MessageBox></MessageBox>
-      <Table :tableData="tableData" :table="table" :isWidth="300"></Table>
+      <MessageBox title="商品类型名称：" @GetCommodity="newGet"></MessageBox>
+      <EDITMessageBox :isShow="MessageShow" @cancel="cancel"></EDITMessageBox>
+      <Table
+        :tableData="tableData"
+        :table="table"
+        :isWidth="300"
+        @edit="edit"
+      ></Table>
       <div class="block">
         <el-pagination
           v-if="this.tableData.length > 10"
@@ -42,6 +48,7 @@
 import Button from '@/components/Fengjian/button.vue'
 import Table from '@/components/Fengjian/table.vue'
 import MessageBox from '@/components/Fengjian/MessageBox.vue'
+import EDITMessageBox from '@/components/Fengjian/EDITMessageBox.vue'
 import { getCommodityList, getCommoditySearch } from '@/api/CommodityType'
 export default {
   data() {
@@ -51,6 +58,7 @@ export default {
       },
       index: 0,
       pageIndex: 1,
+      MessageShow: false,
       // 总条数
       totalCount: 0,
       totalPage: 0,
@@ -59,7 +67,7 @@ export default {
       // 渲染列表
       // 未筛选列表
       ToList: [],
-
+      MessageBoxState: '',
       tableData: [],
       table: [{ prop: 'className', label: '商品类型名称' }],
     }
@@ -68,12 +76,25 @@ export default {
     Button,
     Table,
     MessageBox,
+    EDITMessageBox,
   },
   created() {
     this.getCommodityList()
   },
 
   methods: {
+    cancel() {
+      this.MessageShow = false
+    },
+    edit(val) {
+      this.MessageShow = true
+      console.log(val)
+      console.log(this.MessageShow)
+    },
+    //传父调用
+    newGet() {
+      this.getCommodityList()
+    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
     },
@@ -94,30 +115,12 @@ export default {
 
       const List = res.data.currentPageRecords
       List.forEach((item) => {
-        this.ToList.push({
+        this.tableData.push({
           index: this.index + 1,
-          className: item.skuClass.className,
+          className: item.className,
+          classId: item.classId,
         })
       })
-      // brandName
-      //  className: item.skuClass.className,
-      console.log('1111', this.ToList)
-      const ToList = this.ToList
-      // ---------------------------------------------------------去重
-
-      const result = []
-      const obj = {}
-      for (var i = 0; i < ToList.length; i++) {
-        if (!obj[ToList[i].className]) {
-          result.push(ToList[i])
-          obj[ToList[i].className] = true
-        }
-      }
-
-      this.tableData = result
-      console.log(this.tableData)
-
-      // ---------------------------------------------------------去重
     },
     async getCommoditySearch() {
       const res = await getCommoditySearch({
