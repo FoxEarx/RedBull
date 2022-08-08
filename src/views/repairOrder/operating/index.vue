@@ -1,6 +1,6 @@
 <template>
   <div>
-    <mainSearch></mainSearch>
+    <mainSearch :firstInput="'工单编号'" :TwoInput="true"></mainSearch>
     <div class="Main">
       <div class="MainNav">
         <!-- 按钮1 -->
