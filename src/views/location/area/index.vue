@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 头部搜索框 Start -->
-    <Search title="区域搜索"></Search>
+    <Search title="区域搜索" @searchArea="searchArea"></Search>
     <!-- 头部搜索框 End -->
 
     <!-- 主体列表 Start -->
@@ -11,6 +11,7 @@
         icon="el-icon-circle-plus-outline"
         text="新建"
         color="linear-gradient(135deg,#ff9743,#ff5e20)!important"
+        @click.native="addArea"
       ></Button>
       <!-- 列表 -->
       <NList :tableData="areaInfo.currentPageRecords" :table="table">
@@ -19,8 +20,12 @@
             text="查看详情"
             @click.native="diaShow(data)"
           ></TextButton>
-          <TextButton text="修改"></TextButton>
-          <TextButton text="删除" color="red"></TextButton>
+          <TextButton text="修改" @click.native="editDialod"></TextButton>
+          <TextButton
+            text="删除"
+            color="red"
+            @click.native="delAreaInfo"
+          ></TextButton>
         </template>
       </NList>
       <!-- 分页 -->
@@ -34,11 +39,57 @@
     <!-- 主体列表 End -->
 
     <!-- 详情弹窗 -->
-    <Dialog title="区域详情" :dialogVisible="dialogVisible">
-      <el-form>
-        <el-form-item label="区域名称:">123123</el-form-item>
+    <Dialog :title="title" :dialogVisible="dialogVisible" @close="onClose">
+      <!-- 修改区域详情 -->
+      <el-form
+        :model="formData"
+        :rules="formRules"
+        v-if="title !== '区域详情'"
+        ref="form"
+      >
+        <el-form-item label="区域名称:" prop="regionName">
+          <el-input
+            maxlength="15"
+            v-model="formData.regionName"
+            show-word-limit
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="备注说明:" prop="remark">
+          <el-input
+            type="textarea"
+            maxlength="40"
+            v-model="formData.remark"
+            show-word-limit
+            placeholder="请输入备注(不超过40字)"
+          ></el-input>
+        </el-form-item>
+        <div class="flootButton">
+          <Button
+            text="取消"
+            color="#fbf4f0"
+            textColor="#333"
+            @click.native="onClose"
+          ></Button>
+          <Button
+            text="确认"
+            @click.native="editAreaInfo"
+            class="el-button--primary1"
+            color="linear-gradient(135deg,#ff9743,#ff5e20)"
+          ></Button>
+        </div>
+      </el-form>
+
+      <!-- 区域详情查看 -->
+      <el-form v-else :model="formData" :rules="formRules">
+        <el-form-item label="区域名称:">{{ columnInfo.name }}</el-form-item>
         <el-form-item label="包含点位:">
-          <NList class="dialog" :table="areaTable" :show="false"></NList>
+          <NList
+            class="dialog"
+            :table="areaTable"
+            :tableData="nodeInfo"
+            :show="false"
+          ></NList>
         </el-form-item>
       </el-form>
     </Dialog>
@@ -52,7 +103,13 @@ import NList from '@/components/n-List'
 import Button from '@/components/Button'
 import TextButton from '@/components/Text-Button'
 import Pagination from '@/components/Pagination'
-import { getLocationList, getAreaInfo } from '@/api'
+import {
+  getLocationList,
+  getAreaInfo,
+  editAreaInfo,
+  delAreaInfo,
+  addArea,
+} from '@/api'
 export default {
   data() {
     return {
@@ -75,13 +132,36 @@ export default {
       areaTable: [
         {
           label: '点位名称',
-          prop: '',
+          prop: 'name',
         },
         {
           label: '设备数量',
-          prop: '',
+          prop: 'vmCount',
         },
       ],
+      nodeInfo: [],
+      columnInfo: {},
+      formData: {
+        regionName: '',
+        remark: '',
+      },
+      formRules: {
+        regionName: [
+          {
+            required: true,
+            trigger: 'change',
+            message: '请输入',
+          },
+        ],
+        remark: [
+          {
+            required: true,
+            trigger: 'change',
+            message: '请输入',
+          },
+        ],
+      },
+      title: '',
     }
   },
 
@@ -95,6 +175,19 @@ export default {
       const res = await getLocationList(pageIndex)
       this.areaInfo = res.data
     },
+    // 搜索区域
+    async searchArea(val) {
+      if (val === '') {
+        return
+      }
+      const res = await getLocationList(this.areaInfo.pageIndex, val)
+      this.areaInfo = res.data
+    },
+    // 新建区域
+    addArea() {
+      this.title = '新增区域'
+      this.dialogVisible = true
+    },
     // 获取上一页区域管理列表
     prevPage() {
       this.getLocationList(--this.areaInfo.pageIndex)
@@ -105,13 +198,69 @@ export default {
     },
     // 鼠标点数换页
     currentPage(val) {
-      console.log(val)
       this.getLocationList(val)
     },
     // 点击查看详情
-    diaShow(data) {
-      console.log(data)
-      this.dialogVisible = true
+    diaShow() {
+      this.title = '区域详情'
+      setTimeout(async () => {
+        this.dialogVisible = true
+        this.columnInfo = this.$store.state.location.columnInfo
+        const res = await getAreaInfo(this.columnInfo.id)
+        this.nodeInfo = res.data.currentPageRecords
+      })
+    },
+    // 点击修改区域
+    editDialod() {
+      this.title = '修改区域'
+      setTimeout(() => {
+        this.dialogVisible = true
+        const { name, remark, id } = this.$store.state.location.columnInfo
+        this.formData.regionName = name
+        this.formData.remark = remark
+        this.formData.id = id
+      })
+    },
+    // 点击确定 更新/添加 区域信息
+    async editAreaInfo() {
+      try {
+        await this.$refs.form.validate()
+        if (this.formData.id) {
+          await editAreaInfo(this.formData)
+          this.$message.success('修改成功')
+        } else {
+          await addArea(this.formData)
+          this.$message.success('添加成功')
+        }
+        this.onClose()
+        this.getLocationList(this.areaInfo.pageIndex)
+      } catch (error) {}
+    },
+    // 点击删除当前区域信息
+    async delAreaInfo() {
+      try {
+        await this.$confirm('是否确定删除该区域?', '提示', {
+          confirmButtonText: '删除',
+          cancelButtonText: '取消',
+        })
+        const res = await delAreaInfo(this.$store.state.location.columnInfo.id)
+        this.$message.success('删除成功')
+        this.onClose()
+        this.getLocationList(this.areaInfo.pageIndex)
+      } catch (error) {
+        this.$message.error(error.response.data)
+      }
+    },
+    // 关闭弹窗
+    onClose() {
+      this.dialogVisible = false
+      if (this.$refs.form !== undefined) {
+        this.$refs.form.resetFields()
+      }
+      this.formData = {
+        regionName: '',
+        remark: '',
+      }
     },
   },
 
@@ -148,6 +297,25 @@ export default {
   }
   .el-table::before {
     background-color: #fff;
+  }
+  .el-table__row {
+    height: 44px;
+    border-top: 0;
+  }
+  .el-table td,
+  .el-table th.is-leaf {
+    border-bottom: unset;
+  }
+}
+/deep/.flootButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .el-button--primary {
+    width: 80px;
+  }
+  .el-button--primary1 {
+    margin-left: 34px;
   }
 }
 </style>
