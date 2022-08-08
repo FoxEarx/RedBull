@@ -32,7 +32,7 @@
             </el-col>
             <el-col :span="8" class="DayNum">
               <span class="num">{{ IncomeStatisticsWY }}</span>
-              <span class="text">当月销售量(元)</span>
+              <span class="text">当月销售量(万元)</span>
             </el-col>
             <el-col :span="8" class="DayNum">
               <span class="num">{{ DivideStatistics }}</span>
@@ -95,11 +95,15 @@
         </el-col>
       </el-row>
       <!-- 显示数据 -->
+
+      <!-- 表格区域 -->
+      <Table :tableData="tableData" :table="table" class="istable"></Table>
     </el-card>
   </div>
 </template>
 
 <script>
+import Table from '@/components/Fengjian/table.vue'
 import {
   getTimerIn,
   getNum,
@@ -142,11 +146,21 @@ export default {
       todayDivideStatistics: '',
       // 合作商列表
       PartnList: [],
-      // 时间选择默认时间
-      PartnTable: [],
+      // 渲染列表
+      tableData: [],
+      table: [
+        { prop: 'date', label: '订单日期' },
+        { prop: 'ownerName', label: '合作商' },
+        { prop: 'ratio', label: '分成比例' },
+        { prop: 'orderTotalMoney', label: '收入(元)' },
+        { prop: 'orderCount', label: '笔数' },
+        { prop: 'totalBill', label: '分成金额(元)' },
+      ],
     }
   },
-
+  components: {
+    Table,
+  },
   created() {
     //1331604592
     // this.startTime()
@@ -170,7 +184,7 @@ export default {
       )
       const PartnList = res.data.currentPageRecords
       PartnList.forEach((item) => {
-        this.PartnTable.push({
+        this.tableData.push({
           date: item.date,
           ownerName: item.ownerName,
           ratio: item.ratio + '%',
@@ -179,7 +193,7 @@ export default {
           totalBill: '+' + item.totalBill / 100,
         })
       })
-      console.log(this.PartnTable)
+      console.log(this.tableData)
     },
     //获取合作商列表
     async getPartner() {
@@ -391,5 +405,8 @@ export default {
       font-size: 12px;
     }
   }
+}
+.istable {
+  margin-top: 20px;
 }
 </style>
