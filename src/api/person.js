@@ -89,10 +89,11 @@ export function delPersonApi(id) {
  * @param {*} id
  * @returns
  */
-export function editPersonApi(id) {
+export function editPersonApi(data, id) {
   return request({
     url: `/user-service/user/${id}`,
     method: 'PUT',
+    data,
   })
 }
 
@@ -109,8 +110,8 @@ export function getPersonById(id) {
 
 /**
  * 获取用户工作量(工单统计)
- * @param {*} params 
- * @returns 
+ * @param {*} params
+ * @returns
  */
 export function getUserWorkCount(params) {
   return request({

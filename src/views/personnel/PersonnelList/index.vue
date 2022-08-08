@@ -151,7 +151,7 @@ export default {
     },
     showAddDept() {
       this.dialogVisible = true
-      this.dialogTitle="添加人员"
+      this.dialogTitle = '添加人员'
     },
     loadDepts() {
       this.getPersonnelList({
@@ -172,20 +172,16 @@ export default {
     },
     async onEdit(id) {
       this.dialogVisible = true
-      this.dialogTitle='编辑人员信息'
-      const list = []
+      this.dialogTitle = '编辑人员信息'
       const { data } = await getPersonById(id.id)
-      list.push({
-        userName: data.userName,
-        regionName: data.regionName,
-        roleId: data.roleId,
-        mobile: data.mobile,
-        image: data.image,
-        regionId: data.regionId,
-        status: data.status,
-      })
-      this.editList = list
-      console.log(this.editList)
+      ;(this.$refs.addPerson.formData.userName = data.userName),
+        (this.$refs.addPerson.formData.regionName = data.regionName),
+        (this.$refs.addPerson.formData.roleId = data.roleId),
+        (this.$refs.addPerson.formData.mobile = data.mobile),
+        (this.$refs.addPerson.formData.regionId = data.regionId),
+        (this.$refs.addPerson.formData.image = data.image),
+        (this.$refs.addPerson.formData.status = data.status),
+        (this.$refs.addPerson.formData.userId = data.userId)
     },
   },
 }

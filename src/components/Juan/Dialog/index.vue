@@ -12,7 +12,11 @@
       label-width="100px"
     >
       <el-form-item label=" 人员名称" prop="userName">
-        <el-input v-model="formData.userName" placeholder="请输入"></el-input>
+        <el-input
+          v-model="formData.userName"
+          placeholder="请输入"
+          maxlength="12"
+        ></el-input>
       </el-form-item>
       <el-form-item label="角色" prop="roleId">
         <el-select
@@ -63,7 +67,7 @@
           <img v-if="formData.image" :src="formData.image" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           <div class="el-upload__tip" slot="tip">
-            只能上传jpg/png文件，且不超过500kb
+            支持扩展名：jpg、jpeg、png，文件不得大于100kb
           </div>
         </el-upload>
       </el-form-item>
@@ -96,10 +100,6 @@ export default {
       type: String,
       required: true,
     },
-    editList: {
-      type: [Object, Array],
-      required: true,
-    },
   },
   data() {
     return {
@@ -114,9 +114,15 @@ export default {
       },
       loadingstate: false,
       formRules: {
-        userName: [{ required: true, message: '请输入名字', trigger: 'blur' }],
+        userName: [
+          { required: true, message: '请输入名字', trigger: 'blur' },
+          { min: 1, max: 5, message: '名字长度在5个字符以内', trigger: 'blur' },
+        ],
         roleId: [{ required: true, message: '请选择角色', trigger: 'change' }],
-        mobile: [{ required: true, message: '请输入电话', trigger: 'blur' }],
+        mobile: [
+          { required: true, message: '请输入电话', trigger: 'blur' },
+          { min: 11, max: 11, message: '请输入11位手机号', trigger: 'blur' },
+        ],
         regionName: [
           { required: true, message: '请选择区域', trigger: 'change' },
         ],
@@ -171,12 +177,21 @@ export default {
     async onSave() {
       await this.$refs.form.validate()
       try {
-        await addPersonApi(this.formData)
-        this.$message.success('新增部门成功')
-        this.onClose()
-        this.$emit('add-success')
-        console.log(22)
-      } catch (err) {}
+        if (this.formData.userId) {
+          await editPersonApi(this.formData, this.formData.userId)
+          this.$message.success('编辑成功')
+          this.onClose()
+          this.$emit('add-success')
+        } else {
+          await addPersonApi(this.formData)
+          this.$message.success('新增成功')
+          this.onClose()
+          this.$emit('add-success')
+          console.log(22)
+        }
+      } catch (err) {
+        this.$message.error('操作失败')
+      }
     },
     async httpRequest(file) {
       //   console.log(file)
@@ -186,15 +201,23 @@ export default {
     },
     async fileChange(item, el) {
       var formdata = new FormData()
-      //   console.log(item)
-      formdata.append('fileName', item.raw)
-      //   console.log(formdata)
-      await updatImg(formdata).then((res) => {
-        // console.log(res)
-        if (res.status == 200) {
-          this.formData.image = res.data
-        }
-      })
+      if (item.size > 0.1 * 1024 * 1024) {
+        return this.$message.error('图片大于100kb,上传失败')
+      }
+      if (
+        !item.raw.type == 'image/jpeg' ||
+        !item.raw.type == 'image/jpg' ||
+        !item.raw.type == 'image/png'
+      ) {
+        return this.$message.error('仅支持扩展名：jpg、jpeg、png')
+      } else {
+        formdata.append('fileName', item.raw)
+        await updatImg(formdata).then((res) => {
+          if (res.status == 200) {
+            this.formData.image = res.data
+          }
+        })
+      }
     },
   },
 }

@@ -275,7 +275,6 @@ export default {
       } else if (this.roleNameValue == 1) {
         this.isRepair = true
       }
-      console.log(this.roleNameValue)
       this.getUserWorkList({
         userName: this.usernameValue,
         isRepair: this.isRepair,
