@@ -1,7 +1,7 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="row">
+      <el-table :data="tableData" style="width: 100%" @cell-click="row">
         <el-table-column
           type="index"
           label="序号"
@@ -35,7 +35,7 @@ export default {
 
   methods: {
     row(row) {
-      console.log(row)
+      this.$store.dispatch('location/getColumnInfo', row)
     },
   },
   props: {

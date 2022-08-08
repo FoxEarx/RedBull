@@ -1,5 +1,10 @@
 <template>
-  <el-dialog :title="title" :visible="dialogVisible" width="33%">
+  <el-dialog
+    :title="title"
+    :visible="dialogVisible"
+    width="33%"
+    @close="onclose"
+  >
     <slot />
   </el-dialog>
 </template>
@@ -24,7 +29,11 @@ export default {
 
   created() {},
 
-  methods: {},
+  methods: {
+    onclose() {
+      this.$emit('close')
+    },
+  },
 }
 </script>
 

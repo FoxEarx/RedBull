@@ -34,6 +34,7 @@ export default {
   created() {},
 
   methods: {
+    // 获取表格当前行详细信息
     row(row) {
       console.log(row)
     },
