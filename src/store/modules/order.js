@@ -7,6 +7,7 @@ export default {
   mutations: {
     setOrder(state, payload) {
       state.AllList = payload
+      // console.log(payload)
     },
   },
   actions: {
@@ -14,6 +15,7 @@ export default {
       const res = await getOrderList(id)
       // console.log('order', res.data.currentPageRecords)
       context.commit('setOrder', res.data)
+      // console.log(res.data)
     },
   },
 }

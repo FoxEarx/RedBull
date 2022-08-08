@@ -1,7 +1,7 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="a">
+      <el-table :data="tableData" style="width: 100%" @row-click="currentId">
         <el-table-column type="index" label="序号" min-width></el-table-column>
         <el-table-column
           v-for="(item, index) in table"
@@ -25,16 +25,17 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      orderId: '',
+    }
   },
 
   created() {},
 
   methods: {
-    a(row, column, event) {
-      console.log(row)
-      console.log(column)
-      console.log(event)
+    currentId(row) {
+      this.order = row.orderNo
+      this.$emit('pushid', this.order)
     },
   },
   props: {

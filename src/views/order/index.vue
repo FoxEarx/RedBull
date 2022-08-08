@@ -1,8 +1,8 @@
 <template>
   <div>
-    <SearchandDay></SearchandDay>
+    <SearchandDay @inpVal="getVal"></SearchandDay>
     <div class="Main">
-      <List :tableData="tableData" :table="table">
+      <List :tableData="tableData" :table="table" @pushid="getorderId">
         <template #operation>
           <span class="details" @click="viewDetails">查看详情</span>
         </template>
@@ -16,11 +16,16 @@
           :total="+$store.state.order.AllList.totalCount"
           @prevClick="prevClick"
           @nextClick="nextClick"
+          v-show="this.tableData.length !== 1 && this.tableData.length !== 0"
         ></turn-page>
       </div>
       <!-- 弹出层 -->
       <div class="dialog">
-        <Dialog ref="orderDialog" :visible.sync="dialogVisible" />
+        <Dialog
+          ref="orderDialog"
+          :visible.sync="dialogVisible"
+          :orderevent="orderevent"
+        />
       </div>
     </div>
   </div>
@@ -35,7 +40,12 @@ import dayjs from 'dayjs'
 export default {
   data() {
     return {
-      dialogVisible: false,
+      orderevent: {},
+      searchEvent: {},
+      orderid: '',
+      searchId: '',
+      dialogVisible: false, //弹出框
+      pageVisible: true, //分页
       tableData: [],
       index: 1,
       table: [
@@ -57,6 +67,7 @@ export default {
   updatad() {},
 
   methods: {
+    // 获取列表并渲染
     async getList() {
       const list = []
       await this.$store.state.order.AllList.currentPageRecords.forEach(
@@ -84,6 +95,7 @@ export default {
       this.tableData = list
       // console.log('11', this.tableData)
     },
+    // 上下页
     async nextClick() {
       this.index++
       await this.$store.dispatch('order/getOrder', this.index)
@@ -94,8 +106,69 @@ export default {
       await this.$store.dispatch('order/getOrder', this.index)
       this.getList()
     },
+    // 弹出框
     viewDetails() {
-      ;(this.dialogVisible = true), console.log(11)
+      this.dialogVisible = true
+      // , console.log(11)
+    },
+    // 获取点击的列表的总事件
+    getorderId(val) {
+      this.orderid = val
+      // console.log(val)
+      const list = this.$store.state.order.AllList.currentPageRecords
+      // console.log('list', list)
+      list.filter((item) => {
+        if (item.orderNo === val) {
+          this.orderevent = item
+          // console.log('item', this.orderevent)
+        }
+        // console.log(arr)
+      })
+      const arr = this.orderevent.addr.split('-')
+      const index = arr.length - 1
+      // console.log(arr[index])
+      this.orderevent.addr = arr[index]
+    },
+    async getVal(val) {
+      // console.log(val)
+      const arr = []
+      if (val.length !== 0) {
+        this.searchId = val
+        // const list = this.tableData
+        await this.$store.state.order.AllList.currentPageRecords.filter(
+          (item) => {
+            const time = dayjs(this.searchEvent.createTime).format(
+              'YYYY.MM.DD hh:mm:ss',
+            )
+            if (item.orderNo === val) {
+              this.searchEvent = item
+              console.log('event', this.searchEvent)
+              arr.push({
+                orderNo: this.searchEvent.orderNo,
+                skuName: this.searchEvent.skuName,
+                amount: this.searchEvent.amount,
+                status:
+                  this.searchEvent.status === 0
+                    ? '未支付'
+                    : this.searchEvent.status === 1
+                    ? '支付完成'
+                    : this.searchEvent.status === 2
+                    ? '出货成功'
+                    : '出货失败',
+                innerCode: this.searchEvent.innerCode,
+                userName: this.searchEvent.userName,
+                createTime: time,
+                operation: '查看详情',
+              })
+            }
+          },
+        )
+        this.tableData = arr
+        console.log('id', val)
+        this.pageVisible = false
+      } else {
+        this.getList()
+      }
     },
   },
   components: {
