@@ -11,9 +11,9 @@
           min-width
         >
         </el-table-column>
-        <el-table-column label="图片">
+        <!-- <el-table-column label="图片">
           <slot name="img"></slot>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作">
           <slot name="operation"></slot>
         </el-table-column>

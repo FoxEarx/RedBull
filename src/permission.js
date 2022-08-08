@@ -10,6 +10,9 @@ router.beforeEach(async (to, from, next) => {
     if (!store.state.repair.AllList) {
       await store.dispatch('repair/getAllList')
     }
+    if (!store.state.order.AllList) {
+      await store.dispatch('order/getOrder')
+    }
 
     if (to.path === '/login') {
       next('/')
