@@ -3,18 +3,11 @@
     <mainSearch :firstInput="'设备编号'" @search="search"></mainSearch>
     <div class="Main">
       <div class="MainNav">
-        <!-- 按钮1 -->
-        <el-button
-          @click="addEquipment"
-          class="el-icon-circle-plus-outline el-button-1"
-          >新建</el-button
-        >
-        <!-- 新增设备弹出层 -->
-        <el-dialog
-          title="新增设备"
-          :visible.sync="dialogVisible1"
-          width="30%"
-          :before-close="handleClose"
+        <Add
+          :dialogVisible1="dialogVisible1"
+          @addEquipment="addEquipment"
+          @tureaddEquipment="tureaddEquipment"
+          :type="'新增设备'"
         >
           <el-form ref="form" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="设备编号："> 系统自动生成 </el-form-item>
@@ -47,13 +40,9 @@
               </el-select>
             </el-form-item>
           </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible1 = false">取消</el-button>
-            <el-button type="primary" @click="tureaddEquipment"
-              >确 定</el-button
-            >
-          </span>
-        </el-dialog>
+        </Add>
+        <!-- 按钮1 -->
+
         <!-- 按钮2 -->
         <el-button @click="dialogVisible2 = true" class="el-button-2"
           >工单配置</el-button
@@ -82,7 +71,7 @@
         <template #operation>
           <span class="details">货道 </span>
           <span class="details">策略 </span>
-          <el-button type="text" @click="open">修改</el-button>
+          <el-button type="text">修改</el-button>
         </template>
       </List>
       <!-- 分页 -->
@@ -99,6 +88,7 @@
 import mainSearch from '@/components/mainSearch'
 import List from '@/components/List'
 import Paging from '@/components/paging'
+import Add from '@/components/Add'
 import { addEquipmentType, addEquipmentNode, addEquipment } from '@/api'
 
 export default {
@@ -207,6 +197,7 @@ export default {
     mainSearch,
     List,
     Paging,
+    Add,
   },
 }
 </script>
