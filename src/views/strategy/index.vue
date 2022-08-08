@@ -1,5 +1,5 @@
 <template>
-  <div>策略管理</div>
+  <div>策略</div>
 </template>
 
 <script>

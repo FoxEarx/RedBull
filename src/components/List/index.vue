@@ -1,10 +1,6 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="a">
-        <el-table-column type="index" label="序号"></el-table-column>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="selection" v-if="checkShow"> </el-table-column>
       <el-table :data="tableData" style="width: 100%" @row-click="row">
         <el-table-column
           prop="index"
@@ -37,9 +33,7 @@ export default {
 
   created() {},
 
-  methods: {
-
-  },
+  methods: {},
   props: {
     //行数
     tableData: {
@@ -57,8 +51,8 @@ export default {
     checkShow: {
       type: Boolean,
       default: false,
+    },
   },
-}
 }
 </script>
 
