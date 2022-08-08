@@ -1,7 +1,12 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="click">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @row-click="click"
+        @selection-change="selectionChange"
+      >
         <el-table-column type="selection" v-if="checkShow"> </el-table-column>
         <el-table-column
           prop="index"
@@ -38,6 +43,10 @@ export default {
   methods: {
     click(row) {
       this.$emit('clickList', row)
+    },
+    selectionChange(val) {
+      this.$emit('selectionChange', val)
+      console.log(val)
     },
   },
   props: {
