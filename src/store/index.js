@@ -20,7 +20,6 @@ const store = new Vuex.Store({
     settings,
     user,
     repair,
-    HEAD,
     person,
     equipment,
     order,
