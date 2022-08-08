@@ -54,7 +54,6 @@ export default {
   created() {
     this.getList()
   },
-  updatad() {},
 
   methods: {
     async getList() {
