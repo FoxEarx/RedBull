@@ -42,7 +42,7 @@ export default {
       context.commit('setUserId', '')
     },
     async getUserInfo(context) {
-      console.log(context.state.userId)
+      // console.log(context.state.userId)
       const res = await userInfo(context.state.userId)
       context.commit('setUserInfo', res.data)
     },

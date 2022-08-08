@@ -2,7 +2,15 @@
   <div class="search">
     <el-form ref="form" :inline="true">
       <el-form-item label="订单编号:">
-        <el-input placeholder="请输入订单号" value=""></el-input>
+        <el-input
+          ref="id"
+          v-model="search"
+          placeholder="请输入订单号"
+          value=""
+          clearable
+        >
+          ></el-input
+        >
       </el-form-item>
       <!-- 日期选择器 -->
       <el-form-item label="选择日期:">
@@ -19,7 +27,7 @@
       </el-form-item>
       <!-- 查询按钮 -->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="search"
+        <el-button type="primary" icon="el-icon-search" @click="searchId"
           >查询</el-button
         >
       </el-form-item>
@@ -33,13 +41,17 @@ export default {
     return {
       form: {},
       value1: '',
+      search: '',
     }
   },
 
   created() {},
 
   methods: {
-    search() {},
+    searchId() {
+      this.$emit('inpVal', this.search)
+      // console.log(this.search)
+    },
   },
 }
 </script>
