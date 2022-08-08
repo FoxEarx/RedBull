@@ -1,5 +1,5 @@
 <template>
-  <div class="btn" @click="$emit('Submit')" :class="[color, hover]">
+  <div class="btn" @click="$emit('Add')" :class="[color, hover]">
     <slot></slot>
   </div>
 </template>

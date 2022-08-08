@@ -64,6 +64,7 @@
           <span>日期：</span>
           <el-date-picker
             v-model="form.value"
+            :picker-options="pickerOptions"
             type="daterange"
             range-separator="~"
             :default-value="monthOne"
@@ -100,7 +101,13 @@
       <!-- 显示数据 -->
 
       <!-- 表格区域 -->
-      <Table :tableData="tableData" :table="table" class="istable"></Table>
+      <Table
+        :tableData="tableData"
+        :table="table"
+        class="istable"
+        :isIndex="false"
+        :isOeration="false"
+      ></Table>
     </el-card>
   </div>
 </template>
@@ -125,6 +132,12 @@ export default {
         value: '',
       },
 
+      // 禁用日期
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now() - 8.64e7
+        },
+      },
       // 当月一号
       monthOne: '',
       // 当月一号 去除精确时间
