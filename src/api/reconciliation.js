@@ -45,3 +45,16 @@ export function getPartnerCollect(start, end) {
     },
   })
 }
+
+export function getPartnerCollectPartnerName(partnerName, start, end) {
+  return request({
+    url: '/order-service/report/partnerCollect',
+    params: {
+      partnerName: partnerName,
+      start: start,
+      end: end,
+      pageIndex: 1,
+      pageSize: 10,
+    },
+  })
+}

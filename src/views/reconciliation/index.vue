@@ -54,7 +54,7 @@
               v-for="item in PartnList"
               :key="item.id"
               :label="item.name"
-              value="shanghai"
+              :value="item.name"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -63,7 +63,7 @@
         <div class="block">
           <span>日期：</span>
           <el-date-picker
-            v-model="value"
+            v-model="form.value"
             type="daterange"
             range-separator="~"
             :default-value="monthOne"
@@ -73,6 +73,9 @@
           >
           </el-date-picker>
         </div>
+        <Button class="btn" @Submit="submit"
+          ><i class="el-icon-search"></i> 查询</Button
+        >
         <!-- 选择日期 -->
       </el-form>
 
@@ -104,12 +107,14 @@
 
 <script>
 import Table from '@/components/Fengjian/table.vue'
+import Button from '@/components/Fengjian/button.vue'
 import {
   getTimerIn,
   getNum,
   getDivide,
   getPartner,
   getPartnerCollect,
+  getPartnerCollectPartnerName,
 } from '@/api/reconciliation'
 import dayjs from 'dayjs'
 export default {
@@ -117,8 +122,9 @@ export default {
     return {
       form: {
         region: '',
+        value: '',
       },
-      value: '',
+
       // 当月一号
       monthOne: '',
       // 当月一号 去除精确时间
@@ -156,10 +162,14 @@ export default {
         { prop: 'orderCount', label: '笔数' },
         { prop: 'totalBill', label: '分成金额(元)' },
       ],
+      temporaryTableData: [],
+      // 查询条件收集
+      query: [],
     }
   },
   components: {
     Table,
+    Button,
   },
   created() {
     //1331604592
@@ -284,9 +294,39 @@ export default {
       // 今日日期 去除精确时间
       const todaynewDatePreciseTime = dayjs(new Date()).format('YYYY-MM-DD')
       this.newDatePreciseTime = todaynewDatePreciseTime
+      this.form.value = [this.monthOnePreciseTime, this.newDatePreciseTime]
       // 今日零点
       // this.value = start
       // console.log(zero)
+    },
+
+    async getPartnerCollectPartnerName() {
+      const res = await getPartnerCollectPartnerName(
+        this.query.region,
+        this.query.value[0],
+        this.query.value[1],
+      )
+      this.tableData = []
+      const PartnList = res.data.currentPageRecords
+      PartnList.forEach((item) => {
+        this.tableData.push({
+          date: item.date,
+          ownerName: item.ownerName,
+          ratio: item.ratio + '%',
+          orderTotalMoney: item.orderTotalMoney,
+          orderCount: item.orderCount,
+          totalBill: '+' + item.totalBill / 100,
+        })
+      })
+      // console.log(res)
+    },
+    // 提交查询
+    async submit() {
+      this.startTime()
+      await this.$refs.form.validate()
+      this.query = this.form
+      this.getPartnerCollectPartnerName()
+      console.log(this.query)
     },
   },
 }
@@ -297,7 +337,7 @@ export default {
   position: relative;
   align-items: center;
   width: 49%;
-  height: 220px;
+  height: 200px;
   background-color: #ccc;
   border-radius: 30px;
   margin-right: 25px;
@@ -313,7 +353,7 @@ export default {
     margin: 20px;
   }
   .StatisticalContent {
-    margin-top: 10%;
+    margin-top: 9%;
     .DayNum {
       display: flex;
       flex-direction: column;
@@ -338,7 +378,7 @@ export default {
   position: relative;
   align-items: center;
   width: 49%;
-  height: 220px;
+  height: 200px;
   background-color: #ccc;
   border-radius: 30px;
   background-color: #fbefe8;
@@ -352,7 +392,7 @@ export default {
     margin: 20px;
   }
   .StatisticalContent {
-    margin-top: 10%;
+    margin-top: 9%;
     .DayNum {
       display: flex;
       flex-direction: column;
@@ -384,6 +424,7 @@ export default {
     margin-bottom: unset;
     margin-left: -25px;
   }
+
   .block {
     margin-left: 12px;
     span {
@@ -408,5 +449,8 @@ export default {
 }
 .istable {
   margin-top: 20px;
+}
+.btn {
+  margin-left: 15px;
 }
 </style>
