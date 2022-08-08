@@ -13,7 +13,7 @@ export default {
     async getAllList(context, id) {
       const res = await repairSearch(id)
       context.commit('setRepair', res.data)
-      console.log(res)
+      // console.log(res)
     },
   },
 }
