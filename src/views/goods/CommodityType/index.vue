@@ -111,12 +111,7 @@ export default {
       this.tableData = []
       this.getCommodityList()
     },
-    // handleSizeChange(val) {
-    //   console.log(`每页 ${val} 条`)
-    // },
-    // handleCurrentChange(val) {
-    //   console.log(`当前页: ${val}`)
-    // },
+
     // 获取所有商品类型
     async getCommodityList() {
       // this.totalCount === 0 ? (this.totalCount = 150) : this.totalCount
