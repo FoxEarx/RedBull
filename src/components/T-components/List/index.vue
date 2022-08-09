@@ -16,14 +16,18 @@
         <el-table-column
           v-for="(item, index) in table"
           :key="index"
-          :prop="item.prop"
           :label="item.label"
           :width="width"
         >
+          <template slot-scope="{ row }">
+            <div v-if="item.prop === 'image'">
+              <img :src="row[item.prop]" class="img" />
+            </div>
+            <template v-else>
+              {{ row[item.prop] }}
+            </template>
+          </template>
         </el-table-column>
-        <!-- <el-table-column label="图片">
-          <slot name="img"></slot>
-        </el-table-column> -->
         <el-table-column label="操作">
           <slot name="operation"></slot>
         </el-table-column>
@@ -74,5 +78,9 @@ export default {
 <style scoped lang="less">
 .MainData {
   width: 100%;
+}
+.img {
+  width: 35px;
+  height: 35px;
 }
 </style>

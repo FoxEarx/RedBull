@@ -1,9 +1,6 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="click">
-        <el-table-column type="selection" v-if="checkShow"> </el-table-column>
-      </el-table>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column
           type="index"
@@ -34,12 +31,10 @@ export default {
   data() {
     return {}
   },
+
   created() {},
-  methods: {
-    click(row) {
-      this.$emit('clickList', row)
-    },
-  },
+
+  methods: {},
   props: {
     //行数
     tableData: {

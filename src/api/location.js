@@ -4,13 +4,14 @@ import request from '@/utils/request.js'
  * 获取区域管理列表
  * @returns promise
  */
-export const getLocationList = (pageIndex, name) => {
+export const getLocationList = (pageIndex, name, pageSize) => {
   return request({
     method: 'GET',
     url: '/vm-service/region/search',
     params: {
       pageIndex,
       name,
+      pageSize,
     },
   })
 }

@@ -44,7 +44,7 @@ export default {
 <style scoped>
 .el-card {
   border: unset;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .input {
