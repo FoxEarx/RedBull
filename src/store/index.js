@@ -11,6 +11,7 @@ import createVuexPersisted from 'vuex-persistedstate'
 import equipment from './modules/equipment'
 import order from './modules/order'
 import location from './modules/location'
+import strategy from './modules/strategy'
 
 import commodityType from './modules/commodityType'
 Vue.use(Vuex)
@@ -26,6 +27,7 @@ const store = new Vuex.Store({
     order,
     location,
     commodityType,
+    strategy,
   },
   getters,
   plugins: [
