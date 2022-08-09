@@ -100,10 +100,10 @@ export default {
       usernameValue: '',
       pageIndex: 1,
       personnelList: [
-        { property: 'userName', label: '人员名称', width: '200px' },
-        { property: 'regionName', label: '归属区域', width: '200px' },
-        { property: 'roleName', label: '角色', width: '200px' },
-        { property: 'mobile', label: '联系电话', width: '200px' },
+        { property: 'userName', label: '人员名称' },
+        { property: 'regionName', label: '归属区域' },
+        { property: 'roleName', label: '角色' },
+        { property: 'mobile', label: '联系电话' },
       ],
       tableData: [],
       editList: {},
@@ -145,6 +145,10 @@ export default {
       })
     },
     search() {
+      if (this.usernameValue.trim() == '') {
+        this.usernameValue = ''
+        return this.$message.error('搜索词不能为空')
+      }
       this.getPersonnelList({
         userName: this.usernameValue,
       })

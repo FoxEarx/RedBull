@@ -9,7 +9,6 @@ export default {
   mutations: {
     setPersonnelList(state, payload) {
       state.personnelList = payload
-      console.log(state.personnelList)
     },
     setUserWorkList(state, payload) {
       state.workList = payload

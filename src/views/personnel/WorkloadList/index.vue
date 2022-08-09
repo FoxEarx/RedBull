@@ -270,6 +270,10 @@ export default {
       })
     },
     search() {
+      if (this.roleNameValue == '' && this.usernameValue.trim() == '') {
+        this.usernameValue = ''
+        return this.$message.error('搜索词不能为空')
+      }
       if (this.roleNameValue == 0) {
         this.isRepair = false
       } else if (this.roleNameValue == 1) {
