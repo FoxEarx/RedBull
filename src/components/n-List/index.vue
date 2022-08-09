@@ -31,11 +31,12 @@ export default {
     return {}
   },
 
-  created() {},
+  created() {
+    this.row()
+  },
 
   methods: {
     row(row) {
-      console.log(row)
       this.$store.dispatch('location/getColumnInfo', row)
     },
   },
