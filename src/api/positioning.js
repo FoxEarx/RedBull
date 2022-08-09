@@ -39,7 +39,7 @@ export const getBusinessList = () => {
 /**
  * 获取合作商信息
  * @param {String} pageSize 需要获取的条数
- * @returns
+ * @returns promise
  */
 export const getOwnerList = (pageSize) => {
   return request({
@@ -54,7 +54,7 @@ export const getOwnerList = (pageSize) => {
 /**
  * 修改点位信息
  * @param {Object} data
- * @returns
+ * @returns promise
  */
 export const editPositionInfo = (data) => {
   return request({
@@ -67,12 +67,24 @@ export const editPositionInfo = (data) => {
 /**
  * 新增点位
  * @param {Object} data
- * @returns
+ * @returns promise
  */
 export const addPositionInfo = (data) => {
   return request({
     method: 'POST',
     url: '/vm-service/node',
     data,
+  })
+}
+
+/**
+ * 删除点位信息
+ * @param {String} id 点位id
+ * @returns promise
+ */
+export const delPositionInfo = (id) => {
+  return request({
+    method: 'DELETE',
+    url: `/vm-service/node/${id}`,
   })
 }
