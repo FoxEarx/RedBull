@@ -2,7 +2,7 @@
   <div class="block">
     <el-pagination
       :page-size="10"
-      :total="+$store.state.equipment.AllEquipment.totalCount"
+      :total="+total"
       @next-click="$emit('nextClick')"
       @prev-click="$emit('prevClick')"
       @current-change="changeCount"
@@ -22,6 +22,11 @@ export default {
   methods: {
     changeCount(index) {
       this.$emit('changeCount', index)
+    },
+  },
+  props: {
+    total: {
+      type: String,
     },
   },
 }
