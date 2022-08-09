@@ -4,7 +4,11 @@
       <Search>
         <template #default>
           <el-form-item label="人员搜索：">
-            <el-input placeholder="请输入" v-model="usernameValue" clearable></el-input>
+            <el-input
+              placeholder="请输入"
+              v-model="usernameValue"
+              clearable
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button
@@ -19,7 +23,10 @@
       </Search>
       <div class="result">
         <div class="personnal">
-          <Button icon="el-icon-circle-plus-outline" class="xinjian"
+          <Button
+            icon="el-icon-circle-plus-outline"
+            class="xinjian"
+            @click.native="showAddDept"
             >新建</Button
           >
         </div>
@@ -28,16 +35,26 @@
             <el-table-column type="index" label="序号" width="50">
             </el-table-column>
             <el-table-column
-              v-for="(item, index) in personnelList"
-              :key="index"
+              v-for="item in personnelList"
+              :key="item.id"
               :property="item.property"
               :label="item.label"
               :width="item.width"
             />
 
             <el-table-column label="操作">
-              <span>修改</span>
-              <span class="perple-del">删除</span>
+              <template slot-scope="scope">
+                <el-button type="text" size="small" @click="onEdit(scope.row)"
+                  >编辑</el-button
+                >
+                <el-button
+                  type="text"
+                  size="small"
+                  class="perple-del"
+                  @click="onRemove(scope.row)"
+                  >删除</el-button
+                >
+              </template>
             </el-table-column>
           </template>
         </Table>
@@ -52,6 +69,14 @@
           </el-pagination>
         </div>
       </div>
+      <!-- 弹层 -->
+      <Dialog
+        :dialogTitle="dialogTitle"
+        :editList.sync="editList"
+        :visible.sync="dialogVisible"
+        ref="addPerson"
+        @add-success="loadDepts"
+      ></Dialog>
     </div>
   </div>
 </template>
@@ -60,14 +85,18 @@
 import Search from '@/components/Juan/Search'
 import Button from '@/components/Juan/Button'
 import Table from '@/components/Juan/Table'
+import Dialog from '@/components/Juan/Dialog'
+import { delPersonApi, getPersonById } from '@/api/person'
 export default {
   components: {
     Search,
     Button,
     Table,
+    Dialog,
   },
   data() {
     return {
+      dialogVisible: false,
       usernameValue: '',
       pageIndex: 1,
       personnelList: [
@@ -77,6 +106,8 @@ export default {
         { property: 'mobile', label: '联系电话', width: '200px' },
       ],
       tableData: [],
+      editList: {},
+      dialogTitle: '',
     }
   },
 
@@ -95,6 +126,7 @@ export default {
             regionName: item.regionName,
             roleName: item.role.roleName,
             mobile: item.mobile,
+            id: item.id,
           })
         },
       )
@@ -116,6 +148,40 @@ export default {
       this.getPersonnelList({
         userName: this.usernameValue,
       })
+    },
+    showAddDept() {
+      this.dialogVisible = true
+      this.dialogTitle = '添加人员'
+    },
+    loadDepts() {
+      this.getPersonnelList({
+        pageIndex: this.pageIndex,
+      })
+    },
+    async onRemove(id) {
+      try {
+        await this.$confirm('此操作将永久删除该人员, 是否确定?', '注意', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+        await delPersonApi(id.id)
+        this.$message.success('删除成功')
+        this.loadDepts()
+      } catch (err) {}
+    },
+    async onEdit(id) {
+      this.dialogVisible = true
+      this.dialogTitle = '编辑人员信息'
+      const { data } = await getPersonById(id.id)
+      ;(this.$refs.addPerson.formData.userName = data.userName),
+        (this.$refs.addPerson.formData.regionName = data.regionName),
+        (this.$refs.addPerson.formData.roleId = data.roleId),
+        (this.$refs.addPerson.formData.mobile = data.mobile),
+        (this.$refs.addPerson.formData.regionId = data.regionId),
+        (this.$refs.addPerson.formData.image = data.image),
+        (this.$refs.addPerson.formData.status = data.status),
+        (this.$refs.addPerson.formData.userId = data.userId)
     },
   },
 }

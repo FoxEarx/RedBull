@@ -45,12 +45,13 @@ export default {
   border-bottom: none;
 }
 .cell {
+  display: flex;
   span {
-    color: #5f84ff;
+    // color: #5f84ff;
     cursor: pointer;
   }
   .perple-del{
-    color: red;
+    color: red !important;
     margin-left: 3px;
   }
 }
