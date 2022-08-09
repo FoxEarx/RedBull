@@ -20,12 +20,17 @@
     <!-- 主体区域 -->
     <el-card class="main" shadow="never">
       <MessageBox title="商品类型名称：" @GetCommodity="newGet"></MessageBox>
-      <EDITMessageBox :isShow="MessageShow" @cancel="cancel"></EDITMessageBox>
+      <EDITMessageBox
+        :isShow="MessageShow"
+        @cancel="cancel"
+        @EnterEdit="EnterEdit"
+      ></EDITMessageBox>
       <Table
         :tableData="tableData"
         :table="table"
-        :isWidth="300"
+        :isWidth="600"
         @edit="edit"
+        @Delet="Delet"
         v-loading="loading"
       ></Table>
       <div class="block">
@@ -73,6 +78,7 @@ export default {
       tableData: [],
       table: [{ prop: 'className', label: '商品类型名称' }],
       loading: false,
+      // editinformation: [],
     }
   },
   components: {
@@ -86,25 +92,38 @@ export default {
   },
 
   methods: {
+    //确认删除
+    Delet() {
+      this.tableData = []
+      this.getCommodityList()
+    },
+    //确认修改后
+    EnterEdit() {
+      this.tableData = []
+      this.getCommodityList()
+    },
+    // 上一页
     prevClick() {
       this.pageIndex--
       this.tableData = []
       this.getCommodityList()
     },
-
+    // 下一页
     nextData() {
       // if (this.totalCount < 10) return (this.disabled = true)
       this.pageIndex++
       this.tableData = []
       this.getCommodityList()
     },
+    // 取消
     cancel() {
       this.MessageShow = false
     },
+    // 修改
     edit(val) {
       this.MessageShow = true
       console.log(val)
-      console.log(this.MessageShow)
+      this.$store.dispatch('commodityType/getClickInformation', val)
     },
     //传父调用
     newGet() {
@@ -114,7 +133,6 @@ export default {
 
     // 获取所有商品类型
     async getCommodityList() {
-      // this.totalCount === 0 ? (this.totalCount = 150) : this.totalCount
       this.pageIndex === 0 ? (this.pageIndex = 1) : this.pageIndex
       this.loading = true
       const res = await getCommodityList({

@@ -6,7 +6,7 @@ import settings from './modules/settings'
 import user from './modules/user'
 import repair from './modules/repair'
 import createVuexPersisted from 'vuex-persistedstate'
-
+import commodityType from './modules/commodityType'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -15,6 +15,7 @@ const store = new Vuex.Store({
     settings,
     user,
     repair,
+    commodityType,
   },
   getters,
   plugins: [
@@ -23,6 +24,7 @@ const store = new Vuex.Store({
         return {
           user: { token: state.user.token, userId: state.user.userId },
           repair,
+          commodityType,
         }
       },
     }),

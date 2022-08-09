@@ -26,9 +26,21 @@ export function getAddCommodity(data) {
 }
 
 // 修改商品类型
-export function getEditCommodity(classId) {
+export function getEditCommodity(classId, className) {
   return request({
     url: `/vm-service/skuClass/${classId}`,
     method: 'PUT',
+    data: {
+      className: className,
+    },
+  })
+}
+
+// 删除商品类型
+// /api/vm-service/skuClass/:classId
+export function getDeletCommodity(classId) {
+  return request({
+    url: `/vm-service/skuClass/${classId}`,
+    method: 'DELETE',
   })
 }
