@@ -26,16 +26,17 @@
         :table="table"
         :isWidth="300"
         @edit="edit"
+        v-loading="loading"
       ></Table>
       <div class="block">
         <el-pagination
-          v-if="this.tableData.length > 10"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          hide-on-single-page
           :current-page.sync="currentPage1"
-          :page-size="100"
+          :page-size="10"
           layout="total, prev, pager, next"
           :total="totalCount"
+          @next-click="nextData"
+          @prev-click="prevClick"
         >
         </el-pagination>
       </div>
@@ -57,12 +58,13 @@ export default {
         name: '',
       },
       index: 0,
-      pageIndex: 1,
+      pageIndex: 0,
       MessageShow: false,
       // 总条数
       totalCount: 0,
+      pageSize: 10,
       totalPage: 0,
-      currentPage1: 5,
+      currentPage1: 1,
       query: [],
       // 渲染列表
       // 未筛选列表
@@ -70,6 +72,7 @@ export default {
       MessageBoxState: '',
       tableData: [],
       table: [{ prop: 'className', label: '商品类型名称' }],
+      loading: false,
     }
   },
   components: {
@@ -83,6 +86,18 @@ export default {
   },
 
   methods: {
+    prevClick() {
+      this.pageIndex--
+      this.tableData = []
+      this.getCommodityList()
+    },
+
+    nextData() {
+      // if (this.totalCount < 10) return (this.disabled = true)
+      this.pageIndex++
+      this.tableData = []
+      this.getCommodityList()
+    },
     cancel() {
       this.MessageShow = false
     },
@@ -93,22 +108,26 @@ export default {
     },
     //传父调用
     newGet() {
+      this.tableData = []
       this.getCommodityList()
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
-    },
+    // handleSizeChange(val) {
+    //   console.log(`每页 ${val} 条`)
+    // },
+    // handleCurrentChange(val) {
+    //   console.log(`当前页: ${val}`)
+    // },
     // 获取所有商品类型
     async getCommodityList() {
-      this.totalCount === 0 ? (this.totalCount = 150) : this.totalCount
+      // this.totalCount === 0 ? (this.totalCount = 150) : this.totalCount
+      this.pageIndex === 0 ? (this.pageIndex = 1) : this.pageIndex
+      this.loading = true
       const res = await getCommodityList({
         pageIndex: this.pageIndex,
-        pageSize: this.totalCount,
+        pageSize: this.pageSize,
       })
       console.log(res.data)
+      this.loading = false
       this.totalPage = res.data.totalPage
       // console.log(res.data.totalCount)
       this.totalCount = parseInt(res.data.totalCount)
