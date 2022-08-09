@@ -1,6 +1,6 @@
 <template>
   <div>
-    <search />
+    <search @inpVal="getVal" />
     <div class="Main">
       <el-button
         type="primary"
@@ -13,9 +13,14 @@
         @click="addStrategy"
         >新建</el-button
       >
-      <List :tableData="tableData" :table="table" @strategyId="getStrategyId">
+      <List
+        :tableData="tableData"
+        :table="table"
+        @strategyId="getStrategyId"
+        v-loading="loading"
+      >
         <template #operation>
-          <span class="details">查看详情</span>
+          <span class="details" @click="lookinfo">查看详情</span>
           <span class="details" @click="Edit">修改</span>
           <span class="del" @click="delFn">删除</span>
         </template>
@@ -32,7 +37,18 @@
         ></turn-page>
       </div>
       <div class="dialog">
-        <Dialog :visible.sync="dialogVisible" @getList="getList" />
+        <Dialog
+          ref="addDept"
+          :visible.sync="dialogVisible"
+          @getList="getList"
+          :dialogTitle="dialogTitle"
+          :evetnsj="evetnsj"
+        />
+        <infoDialog
+          :visible.sync="infoVisible"
+          :currentInfo="currentInfo"
+          :currentEven="currentEven"
+        />
       </div>
     </div>
   </div>
@@ -43,12 +59,14 @@ import search from '@/components/fanzhiyi/strategy/search'
 import List from '@/components/fanzhiyi/List'
 import turnPage from '@/components/fanzhiyi/turnPage'
 import Dialog from '@/components/fanzhiyi/strategy/dialog'
+import infoDialog from '@/views/strategy/component/infodialog'
 import dayjs from 'dayjs'
-import { delStrategyId } from '@/api/strategy'
+import { delStrategyId, getStrategyInfo } from '@/api/strategy'
 export default {
   data() {
     return {
       tableData: [],
+      searchEvent: {},
       index: 1,
       table: [
         { prop: 'policyName', label: '策略名称' },
@@ -60,6 +78,12 @@ export default {
       policyId: '', //点击的行事件id
       dialogVisible: false, //新增弹出框
       evetnsj: '', //点击的行事件
+      loading: false,
+      dialogTitle: '', //弹窗标题
+      infoVisible: false,
+      currentInfo: [],
+      currentEven: '',
+      searchVal: '',
     }
   },
 
@@ -68,9 +92,16 @@ export default {
   },
 
   methods: {
+    // 获取点击事件id
+    getStrategyId(id) {
+      // console.log('事件', id)
+      // console.log('id', id.policyId)
+      this.evetnsj = id
+      this.policyId = id.policyId
+    },
+    // 渲染列表
     getList() {
-      console.log(11)
-      console.log(this.$store.state.strategy.AllList.currentPageRecords)
+      this.loading = true
       const list = []
       this.$store.state.strategy.AllList.currentPageRecords.forEach((item) => {
         const time = dayjs(item.createTime).format('YYYY.MM.DD hh:mm:ss')
@@ -83,10 +114,18 @@ export default {
         })
       })
       this.tableData = list
-
-      // console.log(list)
-
-      // console.log('11', this.tableData)
+      this.loading = false
+    },
+    // 搜索
+    getVal(val) {
+      const arr = []
+      this.$store.state.strategy.AllList.currentPageRecords.filter((item) => {
+        if (item.policyName.indexOf(val) !== -1) {
+          arr.push(item)
+        }
+      })
+      // console.log(arr)
+      this.tableData = arr
     },
     // 上下页
     async nextClick() {
@@ -101,18 +140,37 @@ export default {
     },
     // 新增策略
     addStrategy() {
+      this.dialogTitle = '新增策略'
       this.dialogVisible = true
     },
+    // 查看策略
+    lookinfo() {
+      this.infoVisible = true
+      // console.log(1111)
+      setTimeout(async () => {
+        const res = await getStrategyInfo(this.policyId)
+        // console.log(res)
+        // console.log(res.data.currentPageRecords)
+        this.currentInfo = res.data.currentPageRecords
+        // console.log(this.currentInfo)
+        // console.log(this.evetnsj)
+        this.currentEven = this.evetnsj.policyName
+        // res.data.currentPageRecords
+        // console.log(res.data.currentPageRecords)
+      })
+    },
+
+    // 修改策略
     Edit() {
       this.dialogVisible = true
+      setTimeout(async () => {
+        await console.log('ed', this.policyId)
+        this.dialogTitle = '修改策略'
+        this.$refs.addDept.ruleForm.policyName = this.evetnsj.policyName
+        this.$refs.addDept.ruleForm.discount = this.evetnsj.discount
+      })
     },
-    // 获取点击事件id
-    getStrategyId(id) {
-      console.log('事件', id)
-      console.log('id', id.policyId)
-      this.evetnsj = id
-      this.policyId = id.policyId
-    },
+
     // 删除策略
     async delFn() {
       setTimeout(async () => {
@@ -130,6 +188,7 @@ export default {
     List,
     turnPage,
     Dialog,
+    infoDialog,
   },
 }
 </script>

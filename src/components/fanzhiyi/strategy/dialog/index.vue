@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { addStrategy } from '@/api/strategy'
+import { addStrategy, difStrategy } from '@/api/strategy'
 export default {
   data() {
     return {
@@ -73,7 +73,6 @@ export default {
         policyName: '',
         discount: '',
       },
-      createdTime: '',
       index: 2,
       rules: {
         policyName: [
@@ -98,18 +97,22 @@ export default {
       type: Boolean,
       required: true,
     },
-    evnt: {
-      type: Object,
+    dialogTitle: {
+      type: String,
+      required: true,
     },
-  },
-  computed: {
-    dialogTitle() {
-      return this.ruleForm.policyName ? '修改策略' : '新增策略'
+    evetnsj: {
+      type: [Object, String],
     },
   },
   methods: {
+    // 关闭
     onClose() {
       this.$emit('update:visible', false)
+      this.ruleForm = {
+        policyName: '',
+        discount: '',
+      }
     },
     handleChange(value) {
       // this.strategyScheme = value
@@ -119,20 +122,36 @@ export default {
     async confirm() {
       try {
         if (this.ruleForm.policyName.length !== 0) {
-          await addStrategy(this.ruleForm)
-          await this.$store.dispatch('strategy/getStrategy')
-          this.$emit('update:visible', false)
-          this.$emit('getList')
-          this.ruleForm = {
-            policyName: '',
-            discount: '',
+          if (!this.evetnsj.policyId) {
+            console.log('xz')
+            await addStrategy(this.ruleForm)
+            await this.$store.dispatch('strategy/getStrategy')
+            this.$emit('update:visible', false)
+            this.$emit('getList')
+            this.ruleForm = {
+              policyName: '',
+              discount: '',
+            }
+            this.$message.success('添加策略成功')
+          } else {
+            console.log(this.evetnsj.policyId)
+            const newData = JSON.parse(JSON.stringify(this.ruleForm))
+            await difStrategy(newData, this.evetnsj.policyId)
+            await this.$store.dispatch('strategy/getStrategy')
+            this.$emit('update:visible', false)
+            this.$emit('getList')
+            this.ruleForm = {
+              policyName: '',
+              discount: '',
+            }
+            this.$message.success('修改策略成功')
           }
-          this.$message.success('添加策略成功')
         } else {
           return this.$message.error('策略名称不能为空')
         }
       } catch (err) {
-        this.$message.error('添加的策略名称已存在')
+        console.log(err)
+        // this.$message.error('操作错误')
       }
     },
     // 取消

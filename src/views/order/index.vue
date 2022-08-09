@@ -128,6 +128,7 @@ export default {
       // console.log(arr[index])
       this.orderevent.addr = arr[index]
     },
+    // 搜索
     async getVal(val) {
       // console.log(val)
       const arr = []

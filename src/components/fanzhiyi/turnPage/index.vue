@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <span>
+    <span v-show="pageNum >= 11">
       共{{ pageNum }}条记录 第 {{ currentPage }}/{{ Math.ceil(sumPage) }}
       页
     </span>
@@ -13,6 +13,7 @@
       next-text="下一页"
       @prev-click="prevClick"
       @next-click="nextClick"
+      v-show="pageNum >= 11"
     >
     </el-pagination>
   </div>
