@@ -31,7 +31,9 @@ export default {
     return {}
   },
 
-  created() {},
+  created() {
+    this.row()
+  },
 
   methods: {
     row(row) {
