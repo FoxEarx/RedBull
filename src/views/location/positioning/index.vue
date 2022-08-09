@@ -405,7 +405,6 @@ export default {
     // 关闭弹层
     onClose() {
       this.dialogVisible = false
-      this.$refs.form.resetFields()
     },
     // 获取商圈
     async getBusinessList() {
@@ -452,6 +451,7 @@ export default {
           this.$message.success('修改成功')
         }
         this.onClose()
+        this.$refs.form.resetFields()
         this.getPositionList()
       } catch (error) {
         this.$message.error(error.response.data)
