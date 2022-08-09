@@ -11,7 +11,9 @@ import createVuexPersisted from 'vuex-persistedstate'
 import equipment from './modules/equipment'
 import order from './modules/order'
 import location from './modules/location'
+import strategy from './modules/strategy'
 
+import commodityType from './modules/commodityType'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -24,6 +26,8 @@ const store = new Vuex.Store({
     equipment,
     order,
     location,
+    commodityType,
+    strategy,
   },
   getters,
   plugins: [
@@ -32,6 +36,7 @@ const store = new Vuex.Store({
         return {
           user: { token: state.user.token, userId: state.user.userId },
           repair,
+          commodityType,
         }
       },
     }),

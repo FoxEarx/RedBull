@@ -9,7 +9,17 @@ import locale from 'element-ui/lib/locale/lang/zh-CN' // lang i18n
 import '@/assets/fonts/iconfont.css'
 
 import '@/styles/index.scss' // global css
+import dayjs from 'dayjs'
 
+import 'dayjs/locale/zh-cn'
+
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
+
+dayjs.locale('zh-cn')
+
+Vue.prototype.$dayjs = dayjs
 import App from './App'
 import store from './store'
 import router from './router'
@@ -35,9 +45,9 @@ if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+// Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
-// Vue.use(ElementUI)
+Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 

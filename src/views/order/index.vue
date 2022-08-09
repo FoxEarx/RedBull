@@ -12,7 +12,7 @@
         <turn-page
           :pageNum="+$store.state.order.AllList.totalCount"
           :currentPage="this.index"
-          :sumPage="Math.round($store.state.order.AllList.totalCount / 10)"
+          :sumPage="Math.ceil($store.state.order.AllList.totalCount / 10)"
           :total="+$store.state.order.AllList.totalCount"
           @prevClick="prevClick"
           @nextClick="nextClick"
@@ -128,6 +128,7 @@ export default {
       // console.log(arr[index])
       this.orderevent.addr = arr[index]
     },
+    // 搜索
     async getVal(val) {
       // console.log(val)
       const arr = []
