@@ -18,7 +18,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="$emit('cancel')">取 消</el-button>
-        <el-button type="primary" @click="addCommodity">确 定</el-button>
+        <el-button type="primary" @click="editCommodity">确 定</el-button>
         <!-- dialogVisible = false -->
       </span>
     </el-dialog>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { getAddCommodity, getEditCommodity } from '@/api/CommodityType'
+import { getEditCommodity } from '@/api/CommodityType'
 export default {
   props: {
     title: {
@@ -36,6 +36,9 @@ export default {
     isShow: {
       type: Boolean,
       default: false,
+    },
+    edit: {
+      type: String,
     },
   },
   data() {
@@ -51,6 +54,16 @@ export default {
     console.log(this.isShow)
   },
   methods: {
+    // 编辑指令
+    async getEditCommodity() {
+      const id = this.$store.state.commodityType.ClickInformation.classId
+      const name = this.className
+      const res = await getEditCommodity(id, name)
+      console.log(res)
+      res.data === true
+        ? this.$message.success('修改成功')
+        : this.$message.error('修改失败')
+    },
     onSubmit() {
       console.log('submit!')
     },
@@ -64,23 +77,32 @@ export default {
         })
         .catch((_) => {})
     },
-    async getAddCommodity() {
-      const res = await getAddCommodity({
-        className: this.className,
-      })
-      console.log(res)
-      res.data === true
-        ? this.$message.success('添加成功')
-        : this.$message.error('添加失败')
-    },
-    async addCommodity() {
+    async editCommodity() {
       this.$refs.form.validate()
       this.className = this.form.name
-      await this.getAddCommodity()
+      await this.getEditCommodity()
       this.form.name = ''
-      this.dialogVisible = false
-      this.$emit('GetCommodity')
+      this.$emit('cancel')
+      this.$emit('EnterEdit')
     },
+
+    // async getAddCommodity() {
+    //   const res = await getAddCommodity({
+    //     className: this.className,
+    //   })
+    //   console.log(res)
+    //   res.data === true
+    //     ? this.$message.success('添加成功')
+    //     : this.$message.error('添加失败')
+    // },
+    // async addCommodity() {
+    //   this.$refs.form.validate()
+    //   this.className = this.form.name
+    //   await this.getAddCommodity()
+    //   this.form.name = ''
+    //   this.dialogVisible = false
+    //   this.$emit('GetCommodity')
+    // },
   },
 }
 </script>

@@ -12,6 +12,7 @@ import equipment from './modules/equipment'
 import order from './modules/order'
 import location from './modules/location'
 
+import commodityType from './modules/commodityType'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
@@ -24,6 +25,7 @@ const store = new Vuex.Store({
     equipment,
     order,
     location,
+    commodityType,
   },
   getters,
   plugins: [
@@ -32,6 +34,7 @@ const store = new Vuex.Store({
         return {
           user: { token: state.user.token, userId: state.user.userId },
           repair,
+          commodityType,
         }
       },
     }),
