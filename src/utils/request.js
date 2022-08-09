@@ -49,6 +49,8 @@ service.interceptors.response.use(
       await store.dispatch('user/logout')
       router.push('/login')
       // store.dispatch('user/
+    } else if (error?.response?.status === 500) {
+      Message.error(error.response.data)
     } else {
       Message.error(error.message)
     }

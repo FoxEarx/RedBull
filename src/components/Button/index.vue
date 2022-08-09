@@ -1,7 +1,10 @@
 <template>
-  <el-button type="primary" :icon="icon" :style="{ background: color }">{{
-    text
-  }}</el-button>
+  <el-button
+    type="primary"
+    :icon="icon"
+    :style="{ background: color, color: textColor }"
+    >{{ text }}</el-button
+  >
 </template>
 
 <script>
@@ -26,6 +29,10 @@ export default {
     color: {
       type: String,
       default: () => '#5f84ff',
+    },
+    textColor: {
+      type: String,
+      default: () => '#ffffff',
     },
   },
 }
