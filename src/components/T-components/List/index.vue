@@ -1,9 +1,13 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="click">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @row-click="click"
+        @selection-change="selectionChange"
+      >
         <el-table-column type="selection" v-if="checkShow"> </el-table-column>
-      <el-table :data="tableData" style="width: 100%" @row-click="row">
         <el-table-column
           prop="index"
           label="序号"
@@ -14,6 +18,7 @@
           :key="index"
           :prop="item.prop"
           :label="item.label"
+          :width="width"
         >
         </el-table-column>
         <!-- <el-table-column label="图片">
@@ -34,16 +39,14 @@ export default {
   },
 
   created() {},
-<<<<<<< HEAD
-  methods: {
-    row(row) {
-      console.log(row)
-=======
 
   methods: {
     click(row) {
       this.$emit('clickList', row)
->>>>>>> feature/equipment
+    },
+    selectionChange(val) {
+      this.$emit('selectionChange', val)
+      console.log(val)
     },
   },
   props: {
@@ -63,8 +66,8 @@ export default {
     checkShow: {
       type: Boolean,
       default: false,
+    },
   },
-}
 }
 </script>
 
