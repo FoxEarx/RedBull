@@ -1,5 +1,5 @@
 <template>
-  <div class="btn" @click="$emit('Submit')" :class="[color, hover]">
+  <div class="btn" @click="$emit('Submit')" :class="[color, hover, fonsColor]">
     <slot></slot>
   </div>
 </template>
@@ -14,6 +14,10 @@ export default {
     hover: {
       type: String,
       default: 'default',
+    },
+    fonsColor: {
+      type: String,
+      default: 'white',
     },
   },
   data() {
@@ -46,5 +50,15 @@ export default {
 }
 .orange:hover {
   background-image: linear-gradient(to right, #fc773d, #dd3905);
+}
+.black {
+  color: #000;
+  background-color: #fbf4f0;
+}
+.black:hover {
+  background-color: #f3e7e1;
+}
+.grey {
+  background-color: #fbf4f0;
 }
 </style>

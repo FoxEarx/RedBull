@@ -108,6 +108,18 @@
         :isIndex="false"
         :isOeration="false"
       ></Table>
+      <div class="block">
+        <el-pagination
+          hide-on-single-page
+          :current-page.sync="currentPage1"
+          :page-size="10"
+          layout="total, prev, pager, next"
+          :total="totalCount"
+          @next-click="nextData"
+          @prev-click="prevClick"
+        >
+        </el-pagination>
+      </div>
     </el-card>
   </div>
 </template>
@@ -178,6 +190,13 @@ export default {
       temporaryTableData: [],
       // 查询条件收集
       query: [],
+      pageIndex: 0,
+      totalCount: 0,
+      pageSize: 10,
+      totalPage: 0,
+      currentPage1: 1,
+      starttime: '',
+      endtime: '',
     }
   },
   components: {
@@ -185,8 +204,6 @@ export default {
     Button,
   },
   created() {
-    //1331604592
-    // this.startTime()
     this.getTimerIn()
     this.getNum()
     this.getDivide()
@@ -198,6 +215,19 @@ export default {
   },
 
   methods: {
+    // 上一页
+    prevClick() {
+      this.pageIndex--
+      this.tableData = []
+      this.getCommodityList()
+    },
+    // 下一页
+    nextData() {
+      // if (this.totalCount < 10) return (this.disabled = true)
+      this.pageIndex++
+      this.tableData = []
+      this.getCommodityList()
+    },
     // 获取一定日期范围之内的合作商分成汇总数据
     async getPartnerCollect() {
       this.startTime()
@@ -229,7 +259,6 @@ export default {
           name: item.name,
         })
       })
-      // console.log(this.PartnList)
     },
     // 获取一定时间范围之内的分成总数(月)
     async getDayDivide() {
@@ -307,7 +336,10 @@ export default {
       // 今日日期 去除精确时间
       const todaynewDatePreciseTime = dayjs(new Date()).format('YYYY-MM-DD')
       this.newDatePreciseTime = todaynewDatePreciseTime
-      this.form.value = [this.monthOnePreciseTime, this.newDatePreciseTime]
+      if (this.form.value === '') {
+        this.form.value = [this.monthOnePreciseTime, this.newDatePreciseTime]
+      }
+      //this.form.value = [this.monthOnePreciseTime, this.newDatePreciseTime]
       // 今日零点
       // this.value = start
       // console.log(zero)
@@ -315,10 +347,12 @@ export default {
 
     async getPartnerCollectPartnerName() {
       const res = await getPartnerCollectPartnerName(
-        this.query.region,
-        this.query.value[0],
-        this.query.value[1],
+        this.form.region,
+        this.starttime,
+        this.endtime,
       )
+      //  starttime: '',
+      // endtime: '',
       this.tableData = []
       const PartnList = res.data.currentPageRecords
       PartnList.forEach((item) => {
@@ -336,10 +370,18 @@ export default {
     // 提交查询
     async submit() {
       this.startTime()
-      await this.$refs.form.validate()
-      this.query = this.form
+      this.$refs.form.validate()
+      const s = this.form.value[0]
+      const e = this.form.value[1]
+      // 计算开始时间
+      const monthDatePreciseTime = dayjs(s).format('YYYY-MM-DD')
+      this.starttime = monthDatePreciseTime
+      // 计算结束时间
+      const todaynewDatePreciseTime = dayjs(e).format('YYYY-MM-DD')
+      this.endtime = todaynewDatePreciseTime
+      // console.log('e', this.starttime, this.endtime)
       this.getPartnerCollectPartnerName()
-      console.log(this.query)
+      // console.log('选择的时间', this.query)
     },
   },
 }

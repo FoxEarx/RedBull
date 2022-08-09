@@ -42,6 +42,7 @@
           :total="totalCount"
           @next-click="nextData"
           @prev-click="prevClick"
+          @current-change="handleCurrentChange"
         >
         </el-pagination>
       </div>
@@ -79,6 +80,7 @@ export default {
       table: [{ prop: 'className', label: '商品类型名称' }],
       loading: false,
       // editinformation: [],
+      className: [],
     }
   },
   components: {
@@ -92,6 +94,15 @@ export default {
   },
 
   methods: {
+    handleCurrentChange(val) {
+      console.log(val)
+      this.pageIndex = val
+      this.tableData = []
+      this.getCommodityList()
+    },
+    isPage(val) {
+      console.log(val)
+    },
     //确认删除
     Delet() {
       this.tableData = []
@@ -110,7 +121,6 @@ export default {
     },
     // 下一页
     nextData() {
-      // if (this.totalCount < 10) return (this.disabled = true)
       this.pageIndex++
       this.tableData = []
       this.getCommodityList()
@@ -142,7 +152,6 @@ export default {
       console.log(res.data)
       this.loading = false
       this.totalPage = res.data.totalPage
-      // console.log(res.data.totalCount)
       this.totalCount = parseInt(res.data.totalCount)
 
       const List = res.data.currentPageRecords
@@ -153,6 +162,10 @@ export default {
           classId: item.classId,
         })
       })
+      // const ClassNameList = this.tableData
+      // ClassNameList.forEach((item) => {
+      //   this.className.push(item.className)
+      // })
     },
     async getCommoditySearch() {
       const res = await getCommoditySearch({

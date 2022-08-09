@@ -15,7 +15,16 @@
       :style="{ width: isWidth }"
     >
     </el-table-column>
-
+    <el-table-column v-if="isImage" label="商品图片">
+      <template scope="scope">
+        <img
+          :src="scope.row.skuImage"
+          width="30"
+          height="30"
+          class="head_pic"
+        />
+      </template>
+    </el-table-column>
     <el-table-column
       label="操作"
       class="operation"
@@ -30,6 +39,7 @@
           >修改</el-button
         >
         <el-button
+          v-if="isDelete"
           type="text"
           size="small"
           class="del"
@@ -62,6 +72,14 @@ export default {
     isWidth: {
       type: Number,
       default: 270,
+    },
+    isImage: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
