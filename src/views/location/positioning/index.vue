@@ -32,7 +32,11 @@
         <template #operation>
           <TextButton text="查看详情" @click.native="positionInfo"></TextButton>
           <TextButton text="修改" @click.native="editPositionInfo"></TextButton>
-          <TextButton text="删除" color="red"></TextButton>
+          <TextButton
+            text="删除"
+            color="red"
+            @click.native="delPosition"
+          ></TextButton>
         </template>
       </NList>
       <!-- 分页 -->
@@ -158,6 +162,7 @@ import {
   getOwnerList,
   editPositionInfo,
   addPositionInfo,
+  delPositionInfo,
 } from '@/api'
 export default {
   data() {
@@ -452,10 +457,25 @@ export default {
         }
         this.onClose()
         this.$refs.form.resetFields()
-        this.getPositionList()
+        this.params.pageIndex = this.position.pageIndex
+        this.getPositionList(this.params)
       } catch (error) {
         this.$message.error(error.response.data)
       }
+    },
+    // 删除按钮
+    delPosition() {
+      setTimeout(async () => {
+        try {
+          await delPositionInfo(this.$store.state.location.columnInfo.id)
+          this.onClose()
+          this.$message.success('删除成功')
+          this.params.pageIndex = this.position.pageIndex
+          this.getPositionList(this.params)
+        } catch (error) {
+          this.$message.error(error.response.data)
+        }
+      })
     },
   },
 
