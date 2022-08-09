@@ -9,6 +9,7 @@ import person from './modules/person'
 import createVuexPersisted from 'vuex-persistedstate'
 import equipment from './modules/equipment'
 import order from './modules/order'
+import strategy from './modules/strategy'
 
 Vue.use(Vuex)
 
@@ -21,6 +22,7 @@ const store = new Vuex.Store({
     person,
     equipment,
     order,
+    strategy,
   },
   getters,
   plugins: [

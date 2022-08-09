@@ -1,9 +1,9 @@
 <template>
   <div class="MainData">
     <template>
-      <el-table :data="tableData" style="width: 100%" @row-click="row">
+      <el-table :data="tableData" style="width: 100%">
         <el-table-column
-          prop="index"
+          type="index"
           label="序号"
           width="100px"
         ></el-table-column>
@@ -12,6 +12,7 @@
           :key="index"
           :prop="item.prop"
           :label="item.label"
+          :width="width"
         >
         </el-table-column>
         <!-- <el-table-column label="图片">
@@ -47,10 +48,6 @@ export default {
     width: {
       type: String,
       default: '200px',
-    },
-    checkShow: {
-      type: Boolean,
-      default: false,
     },
   },
 }

@@ -12,7 +12,7 @@
         <turn-page
           :pageNum="+$store.state.order.AllList.totalCount"
           :currentPage="this.index"
-          :sumPage="Math.round($store.state.order.AllList.totalCount / 10)"
+          :sumPage="Math.ceil($store.state.order.AllList.totalCount / 10)"
           :total="+$store.state.order.AllList.totalCount"
           @prevClick="prevClick"
           @nextClick="nextClick"

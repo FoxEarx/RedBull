@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <span>
-      共{{ pageNum }}条记录 第 {{ currentPage }}/{{ sumPage }}
+      共{{ pageNum }}条记录 第 {{ currentPage }}/{{ Math.ceil(sumPage) }}
       页
     </span>
     <el-pagination
@@ -49,7 +49,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .page {
   display: flex;
   span {
@@ -58,11 +58,18 @@ export default {
     margin-left: 20px;
     margin-top: 20px;
   }
+
   .el-pagination {
     flex: 1;
     text-align: right;
     margin-top: 20px;
     margin-right: 20px;
+
+    /deep/button {
+      background-color: #d5ddf8;
+      width: 70px;
+      height: 32px;
+    }
   }
 }
 </style>

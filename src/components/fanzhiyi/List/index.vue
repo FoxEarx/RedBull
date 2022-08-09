@@ -26,7 +26,8 @@
 export default {
   data() {
     return {
-      orderId: '',
+      order: '',
+      strategyId: '',
     }
   },
 
@@ -34,8 +35,12 @@ export default {
 
   methods: {
     currentId(row) {
+      // console.log(row)
+      this.strategyId = row.policyId
       this.order = row.orderNo
       this.$emit('pushid', this.order)
+      this.$emit('strategyId', row)
+      // this.$emit('delFn', this.strategyId)
     },
   },
   props: {
@@ -59,5 +64,10 @@ export default {
 <style scoped lang="less">
 .MainData {
   width: 100%;
+}
+/deep/ .el-table th {
+  font-weight: normal;
+  color: #666;
+  background-color: #f3f6fb;
 }
 </style>
