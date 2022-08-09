@@ -118,7 +118,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item
-          label="账号:"
+          label="密码:"
           prop="password"
           v-if="title === '新增合作商'"
         >
@@ -293,6 +293,7 @@ export default {
       this.dialogVisible = false
       if (this.title !== '合作商详情') {
         this.$refs.form.resetFields()
+        this.partnersDetail.account = ''
       }
     },
     // 重置密码
