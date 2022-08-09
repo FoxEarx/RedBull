@@ -61,3 +61,12 @@ export function getAddComm(data) {
     data,
   })
 }
+
+//修改商品
+export function getEditComm(data) {
+  return request({
+    url: '/vm-service/sku/' + data.skuId,
+    method: 'PUT',
+    data,
+  })
+}

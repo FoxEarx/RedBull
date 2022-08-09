@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 顶部 -->
-    <el-card class="box-card" shadow="never">
+    <el-card class="Top-box-card" shadow="never">
       <el-form ref="form" :model="form" label-width="120px">
         <el-form-item label="商品类型搜索：" class="TypeSearch">
           <el-input
@@ -59,13 +59,14 @@
       :EditList="EditList"
     ></CommodityManagement>
     <!-- 修改 ---------------------------------------------------------------->
-    <el-dialog
-      title="修改商品信息"
-      :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose"
-    >
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+    <el-dialog title="修改商品信息" :visible.sync="dialogVisible" width="30%">
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        label-width="120px"
+        class="form-control"
+      >
         <el-form-item label="商品名称：" prop="skuName">
           <el-input
             v-model="form.skuName"
@@ -128,7 +129,7 @@
       </el-form>
       <p class="Tips">支持拓展名：jpg、png，文件不得大于100kb</p>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="$emit('cancel')">取 消</el-button>
+        <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
@@ -137,7 +138,11 @@
 </template>
 
 <script>
-import { getAllCommodity, getCommodityList } from '@/api/CommodityType'
+import {
+  getAllCommodity,
+  getCommodityList,
+  getEditComm,
+} from '@/api/CommodityType'
 import Button from '@/components/Fengjian/button.vue'
 import Addbutton from '@/components/Fengjian/Addbutton.vue'
 import Table from '@/components/Fengjian/table.vue'
@@ -183,6 +188,8 @@ export default {
       },
       imageUrl: '',
       skuImage: '',
+      skuId: '',
+      classId: '',
       rules: {
         skuName: [{ required: true, message: '请输入商品名称', target: blur }],
         brandName: [{ required: true, message: '请输入品牌', target: blur }],
@@ -208,11 +215,20 @@ export default {
 
   methods: {
     edit(val) {
-      // console.log(val)
       this.EditList = val
-      console.log(this.EditList)
-      this.$store.dispatch('commodityType/getEditCommodity', val)
-      this.MessageShow = true
+      this.form = {
+        skuName: this.EditList.skuName,
+        brandName: this.EditList.brandName,
+        price: this.EditList.price,
+        className: this.EditList.className,
+        unit: this.EditList.unit,
+      }
+      this.imageUrl = this.EditList.skuImage
+      this.skuId = this.EditList.skuId
+      this.classId = this.EditList.classId
+      this.dialogVisible = true
+
+      console.log('EditList', this.EditList)
     },
     handleCurrentChange(val) {
       console.log(val)
@@ -290,21 +306,98 @@ export default {
           price: item.price,
           className: item.skuClass.className,
           createTime: item.createTime,
+          skuId: item.skuId,
+          classId: item.skuClass.classId,
         })
       })
       // console.log(this.tableData)
+    },
+    // 修改------------------------------------------------------------------------
+    // async getAddComm() {
+    //   const res = await getAddComm({
+    //     skuName: this.form.skuName,
+    //     skuImage: this.skuImage,
+    //     price: this.form.price,
+    //     classId: this.form.className,
+    //     unit: this.form.unit,
+    //     brandName: this.form.brandName,
+    //   })
+    //   console.log(res)
+    //   res.data === true
+    //     ? this.$message.success('新增成功')
+    //     : this.$message.error('新增失败')
+    //   this.$emit('cancel')
+    //   this.$emit('NewList')
+    //   this.form = {
+    //     skuName: '',
+    //     brandName: '',
+    //     price: '',
+    //     className: '',
+    //     unit: '',
+    //   }
+    //   this.skuImage = ''
+    // },
+    async getEditComm() {
+      const res = await getEditComm({
+        skuId: this.skuId,
+        skuName: this.form.skuName,
+        skuImage: this.imageUrl,
+        price: this.form.price,
+        classId: this.classId,
+        unit: this.form.unit,
+        brandName: this.form.brandName,
+        skuId: this.skuId,
+      })
+      console.log(res)
+      res.data === true
+        ? this.$message.success('修改成功')
+        : this.$message.error('修改失败')
+      this.dialogVisible = false
+      this.tableData = []
+      this.getAllCommodity()
+    },
+    onSave() {
+      // this.$refs.form.validate()
+      // this.skuImage = this.imageUrl
+      // this.getAddComm()
+      this.getEditComm()
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then((_) => {
+          done()
+        })
+        .catch((_) => {})
     },
   },
 }
 </script>
 
 <style scoped lang="less">
+.Top-box-card {
+  .el-input {
+    width: 280px;
+  }
+}
 .el-form-item {
   margin-bottom: unset;
 }
-.el-input {
-  width: 280px;
-}
+
 .TypeSearch {
   position: relative;
   left: 0;
@@ -324,5 +417,37 @@ export default {
       margin-left: 20px;
     }
   }
+}
+.form-control {
+  width: 100%;
+  .el-form-item {
+    margin-bottom: 30px;
+  }
+}
+.avatar-uploader .el-upload {
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  border: 0.5px solid #ccc;
+  font-size: 28px;
+  color: #8c939d;
+  width: 110px;
+  height: 110px;
+  line-height: 110px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+.Tips {
+  text-align: center;
 }
 </style>
