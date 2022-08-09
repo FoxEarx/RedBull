@@ -30,7 +30,7 @@
             >新建</Button
           >
         </div>
-        <Table :tableData="tableData">
+        <Table :tableData="tableData" v-loading="loading">
           <template #default>
             <el-table-column type="index" label="序号" width="50">
             </el-table-column>
@@ -100,14 +100,15 @@ export default {
       usernameValue: '',
       pageIndex: 1,
       personnelList: [
-        { property: 'userName', label: '人员名称', width: '200px' },
-        { property: 'regionName', label: '归属区域', width: '200px' },
-        { property: 'roleName', label: '角色', width: '200px' },
-        { property: 'mobile', label: '联系电话', width: '200px' },
+        { property: 'userName', label: '人员名称' },
+        { property: 'regionName', label: '归属区域' },
+        { property: 'roleName', label: '角色' },
+        { property: 'mobile', label: '联系电话' },
       ],
       tableData: [],
       editList: {},
       dialogTitle: '',
+      loading: false,
     }
   },
 
@@ -117,6 +118,7 @@ export default {
 
   methods: {
     async getPersonnelList(id) {
+      this.loading = true
       await this.$store.dispatch('person/getPersonnelList', id)
       const list = []
       this.$store.state.person.personnelList.currentPageRecords.forEach(
@@ -130,6 +132,7 @@ export default {
           })
         },
       )
+      this.loading = false 
       this.tableData = list
     },
     async nextClick() {
@@ -145,6 +148,10 @@ export default {
       })
     },
     search() {
+      if (this.usernameValue.trim() == '') {
+        this.usernameValue = ''
+        return this.$message.error('搜索词不能为空')
+      }
       this.getPersonnelList({
         userName: this.usernameValue,
       })
