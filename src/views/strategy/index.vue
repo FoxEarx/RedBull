@@ -35,7 +35,6 @@
         <Dialog :visible.sync="dialogVisible" @getList="getList" />
       </div>
     </div>
-    {{ newtableData }}
   </div>
 </template>
 
@@ -67,19 +66,11 @@ export default {
   created() {
     this.getList()
   },
-  computed: {
-    newtableData: {
-      get: function () {
-        return this.$store.state.strategy.AllList
-      },
-      set: function () {
-        this.tableData = this.$store.state.strategy.AllList
-      },
-    },
-  },
 
   methods: {
-    async getList() {
+    getList() {
+      console.log(11)
+      console.log(this.$store.state.strategy.AllList.currentPageRecords)
       const list = []
       this.$store.state.strategy.AllList.currentPageRecords.forEach((item) => {
         const time = dayjs(item.createTime).format('YYYY.MM.DD hh:mm:ss')
@@ -91,8 +82,10 @@ export default {
           operation: '查看详情',
         })
       })
-      // console.log(list)
       this.tableData = list
+
+      // console.log(list)
+
       // console.log('11', this.tableData)
     },
     // 上下页
@@ -121,13 +114,14 @@ export default {
       this.policyId = id.policyId
     },
     // 删除策略
-    delFn() {
+    async delFn() {
       setTimeout(async () => {
         await delStrategyId(this.policyId)
-        this.$message.success('删除策略成功')
+        await this.$store.dispatch('strategy/getStrategy')
+        this.getList()
       })
-      this.$store.dispatch('strategy/getStrategy')
-      this.getList()
+
+      this.$message.success('删除策略成功')
     },
   },
 

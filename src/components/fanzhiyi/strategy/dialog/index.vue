@@ -120,16 +120,14 @@ export default {
       try {
         if (this.ruleForm.policyName.length !== 0) {
           await addStrategy(this.ruleForm)
+          await this.$store.dispatch('strategy/getStrategy')
           this.$emit('update:visible', false)
+          this.$emit('getList')
           this.ruleForm = {
             policyName: '',
             discount: '',
           }
-          setTimeout(() => {
-            this.$message.success('添加策略成功')
-            this.$store.dispatch('strategy/getStrategy')
-            this.$emit('getList')
-          })
+          this.$message.success('添加策略成功')
         } else {
           return this.$message.error('策略名称不能为空')
         }
