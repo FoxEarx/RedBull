@@ -70,7 +70,7 @@
           </el-pagination>
         </div>
         <!-- 弹层 -->
-        <el-dialog width="80%" title="人员详情" :visible.sync="dialogVisible">
+        <el-dialog width="50%" title="人员详情" :visible.sync="dialogVisible">
           <div class="descriptions">
             <el-row>
               <el-col :span="9"
@@ -98,7 +98,7 @@
           <div class="user-work">
             <el-row class="user-work-1 work">
               <el-col :span="4"
-                ><div class="grid-content bg-purple">99</div></el-col
+                ><div class="grid-content bg-purple">时间/工单</div></el-col
               >
               <el-col :span="5"
                 ><div class="grid-content bg-purple-light">
@@ -193,12 +193,12 @@
               >
             </el-row>
           </div>
-          <span slot="footer" class="dialog-footer">
+          <!-- <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false"
               >确 定</el-button
             >
-          </span>
+          </span> -->
         </el-dialog>
       </div>
     </div>
@@ -284,6 +284,59 @@ export default {
         isRepair: this.isRepair,
       })
     },
+    weekCheckingIn() {
+      this.weekChecking_inloading = true
+      var now = new Date()
+      var nowTime = now.getTime()
+      var day = now.getDay() || 7 // 不加 || 7.周末会变成下周一
+      var oneDayTime = 24 * 60 * 60 * 1000
+      var MondayTime = nowTime - (day - 1) * oneDayTime //显示周一
+      //调用方法
+      return this.formatDate(new Date(MondayTime))
+    },
+
+    //格式化日期：yyyy-MM-dd
+    formatDate(date) {
+      var myyear = date.getFullYear()
+      var mymonth = date.getMonth() + 1
+      var myweekday = date.getDate()
+
+      if (mymonth < 10) {
+        mymonth = '0' + mymonth
+      }
+      if (myweekday < 10) {
+        myweekday = '0' + myweekday
+      }
+      return myyear + '-' + mymonth + '-' + myweekday + ' ' + '00:00:00'
+    },
+    getCurrentMonthFirst() {
+      var date = new Date()
+      date.setDate(1)
+      var month = parseInt(date.getMonth() + 1)
+      var day = date.getDate()
+      if (month < 10) {
+        month = '0' + month
+      }
+      if (day < 10) {
+        day = '0' + day
+      }
+      return date.getFullYear() + '-' + month + '-' + day + ' ' + '00:00:00'
+    },
+    getYear(type, dates) {
+      var dd = new Date()
+      var n = dates || 0
+      var year = dd.getFullYear() + Number(n)
+      if (type == 's') {
+        var day = year + '-01-01'
+      }
+      if (type == 'e') {
+        var day = year + '-12-31'
+      }
+      if (!type) {
+        var day = year + '-01-01/' + year + '-12-31'
+      }
+      return day + ' ' + '00:00:00'
+    },
     async onsSee(id) {
       this.des = id
       const { data } = await getPersonById(id.userId)
@@ -291,19 +344,22 @@ export default {
       this.dialogVisible = true
       const date = new Date()
       const end = dayjs(date).format('YYYY-MM-DD hh:mm:ss')
+      const start1 = this.weekCheckingIn()
+      const start2 = this.getCurrentMonthFirst()
+      const start3 = this.getYear('s', 0)
       const week = await getUserWorkCount({
         userId: id.userId,
-        start: '2022-08-08 00:00:00',
+        start: start1,
         end: end,
       })
       const month = await getUserWorkCount({
         userId: id.userId,
-        start: '2022-08-01 00:00:00',
+        start: start2,
         end: end,
       })
       const year = await getUserWorkCount({
         userId: id.userId,
-        start: '2022-01-01 00:00:00',
+        start: start3,
         end: end,
       })
       this.weekCount = week.data

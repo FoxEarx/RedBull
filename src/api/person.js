@@ -45,8 +45,8 @@ export function getRoleList() {
 
 /**
  * 上传头像
- * @param {*} fileName
- * @returns
+ * @param {*} fileName 
+ * @returns 
  */
 export function updatImg(fileName) {
   return request({
@@ -61,8 +61,8 @@ export function updatImg(fileName) {
 
 /**
  * 新增人员
- * @param {*} params
- * @returns
+ * @param {*} data 
+ * @returns 
  */
 export function addPersonApi(data) {
   return request({
@@ -86,8 +86,9 @@ export function delPersonApi(id) {
 
 /**
  * 编辑人员
- * @param {*} id
- * @returns
+ * @param {*} data 
+ * @param {*} id 
+ * @returns 
  */
 export function editPersonApi(data, id) {
   return request({

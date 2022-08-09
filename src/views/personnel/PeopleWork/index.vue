@@ -105,6 +105,7 @@
                     :picker-options="pickerOptions"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
+                    @blur="onBlur"
                   >
                   </el-date-picker>
                   <div class="week-month-year">
@@ -204,6 +205,7 @@ export default {
     this.getTaskReportInfo()
     this.getAreaList()
     this.yyActive()
+    this.active()
   },
 
   methods: {
@@ -238,7 +240,7 @@ export default {
       this.isRepair = true
       this.getNowTime1()
       this.formDate = this.getNowTime1()
-      const res = await getUserWorkTop10(
+      await getUserWorkTop10(
         this.formDate[0],
         this.formDate[1],
         this.isRepair,
@@ -251,29 +253,83 @@ export default {
       this.isRepair = false
       this.getNowTime1()
       this.formDate = this.getNowTime1()
-      const res = await getUserWorkTop10(
+      await getUserWorkTop10(
         this.formDate[0],
         this.formDate[1],
         this.isRepair,
         this.peoArea,
       )
     },
+    weekCheckingIn() {
+      this.weekChecking_inloading = true
+      var now = new Date()
+      var nowTime = now.getTime()
+      var day = now.getDay() || 7 // 不加 || 7.周末会变成下周一
+      var oneDayTime = 24 * 60 * 60 * 1000
+      var MondayTime = nowTime - (day - 1) * oneDayTime //显示周一
+      //调用方法
+      return this.formatDate(new Date(MondayTime))
+    },
+
+    //格式化日期：yyyy-MM-dd
+    formatDate(date) {
+      var myyear = date.getFullYear()
+      var mymonth = date.getMonth() + 1
+      var myweekday = date.getDate()
+
+      if (mymonth < 10) {
+        mymonth = '0' + mymonth
+      }
+      if (myweekday < 10) {
+        myweekday = '0' + myweekday
+      }
+      return myyear + '-' + mymonth + '-' + myweekday
+    },
+    getCurrentMonthFirst() {
+      var date = new Date()
+      date.setDate(1)
+      var month = parseInt(date.getMonth() + 1)
+      var day = date.getDate()
+      if (month < 10) {
+        month = '0' + month
+      }
+      if (day < 10) {
+        day = '0' + day
+      }
+      return date.getFullYear() + '-' + month + '-' + day
+    },
+    getYear(type, dates) {
+      var dd = new Date()
+      var n = dates || 0
+      var year = dd.getFullYear() + Number(n)
+      if (type == 's') {
+        var day = year + '-01-01'
+      }
+      if (type == 'e') {
+        var day = year + '-12-31'
+      }
+      if (!type) {
+        var day = year + '-01-01/' + year + '-12-31'
+      }
+      return day
+    },
+    async onBlur() {
+      const start = dayjs(new Date(this.formDate[0])).format('YYYY-MM-DD')
+      const end = dayjs(new Date(this.formDate[1])).format('YYYY-MM-DD')
+      await getCollectReport(start, end)
+    },
     getNowTime() {
-      // const start = new Date(new Date().getTime() - 3600 * 1000 * 24 * 7)
-      //   .toISOString()
-      //   .replace('T', ' ')
-      //   .split('.')[0] //默认开始时间7天前
-      const start = '2022-08-06'
+      const start = this.weekCheckingIn()
       const end = dayjs(new Date()).format('YYYY-MM-DD') //默认结束时间1天前
       return [start, end]
     },
     getNowTime1() {
-      const start = '2022-08-01'
+      const start = this.getCurrentMonthFirst()
       const end = dayjs(new Date()).format('YYYY-MM-DD') //默认结束时间1天前
       return [start, end]
     },
     getNowTime2() {
-      const start = '2022-01-01'
+      const start = this.getYear('s', 0)
       const end = dayjs(new Date()).format('YYYY-MM-DD')
       return [start, end]
     },
