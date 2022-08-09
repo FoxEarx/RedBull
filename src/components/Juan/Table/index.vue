@@ -6,7 +6,7 @@
     style="width: 100%"
     :header-cell-style="tableHeaderColor"
   >
-   <slot name="default"></slot>
+    <slot name="default"></slot>
   </el-table>
 </template>
 
@@ -50,9 +50,14 @@ export default {
     // color: #5f84ff;
     cursor: pointer;
   }
-  .perple-del{
+  .perple-del {
     color: red !important;
     margin-left: 3px;
   }
+}
+</style>
+<style lang="scss">
+.el-table td{
+  border-bottom: none;
 }
 </style>
