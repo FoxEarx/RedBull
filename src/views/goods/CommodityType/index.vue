@@ -20,22 +20,29 @@
     <!-- 主体区域 -->
     <el-card class="main" shadow="never">
       <MessageBox title="商品类型名称：" @GetCommodity="newGet"></MessageBox>
-      <EDITMessageBox :isShow="MessageShow" @cancel="cancel"></EDITMessageBox>
+      <EDITMessageBox
+        :isShow="MessageShow"
+        @cancel="cancel"
+        @EnterEdit="EnterEdit"
+      ></EDITMessageBox>
       <Table
         :tableData="tableData"
         :table="table"
-        :isWidth="300"
+        :isWidth="600"
         @edit="edit"
+        @Delet="Delet"
+        v-loading="loading"
       ></Table>
       <div class="block">
         <el-pagination
-          v-if="this.tableData.length > 10"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+          hide-on-single-page
           :current-page.sync="currentPage1"
-          :page-size="100"
+          :page-size="10"
           layout="total, prev, pager, next"
           :total="totalCount"
+          @next-click="nextData"
+          @prev-click="prevClick"
+          @current-change="handleCurrentChange"
         >
         </el-pagination>
       </div>
@@ -57,12 +64,13 @@ export default {
         name: '',
       },
       index: 0,
-      pageIndex: 1,
+      pageIndex: 0,
       MessageShow: false,
       // 总条数
       totalCount: 0,
+      pageSize: 10,
       totalPage: 0,
-      currentPage1: 5,
+      currentPage1: 1,
       query: [],
       // 渲染列表
       // 未筛选列表
@@ -70,6 +78,9 @@ export default {
       MessageBoxState: '',
       tableData: [],
       table: [{ prop: 'className', label: '商品类型名称' }],
+      loading: false,
+      // editinformation: [],
+      className: [],
     }
   },
   components: {
@@ -83,34 +94,64 @@ export default {
   },
 
   methods: {
+    handleCurrentChange(val) {
+      console.log(val)
+      this.pageIndex = val
+      this.tableData = []
+      this.getCommodityList()
+    },
+    isPage(val) {
+      console.log(val)
+    },
+    //确认删除
+    Delet() {
+      this.tableData = []
+      this.getCommodityList()
+    },
+    //确认修改后
+    EnterEdit() {
+      this.tableData = []
+      this.getCommodityList()
+    },
+    // 上一页
+    prevClick() {
+      this.pageIndex--
+      this.tableData = []
+      this.getCommodityList()
+    },
+    // 下一页
+    nextData() {
+      this.pageIndex++
+      this.tableData = []
+      this.getCommodityList()
+    },
+    // 取消
     cancel() {
       this.MessageShow = false
     },
+    // 修改
     edit(val) {
       this.MessageShow = true
       console.log(val)
-      console.log(this.MessageShow)
+      this.$store.dispatch('commodityType/getClickInformation', val)
     },
     //传父调用
     newGet() {
+      this.tableData = []
       this.getCommodityList()
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
-    },
+
     // 获取所有商品类型
     async getCommodityList() {
-      this.totalCount === 0 ? (this.totalCount = 150) : this.totalCount
+      this.pageIndex === 0 ? (this.pageIndex = 1) : this.pageIndex
+      this.loading = true
       const res = await getCommodityList({
         pageIndex: this.pageIndex,
-        pageSize: this.totalCount,
+        pageSize: this.pageSize,
       })
       console.log(res.data)
+      this.loading = false
       this.totalPage = res.data.totalPage
-      // console.log(res.data.totalCount)
       this.totalCount = parseInt(res.data.totalCount)
 
       const List = res.data.currentPageRecords
@@ -121,6 +162,10 @@ export default {
           classId: item.classId,
         })
       })
+      // const ClassNameList = this.tableData
+      // ClassNameList.forEach((item) => {
+      //   this.className.push(item.className)
+      // })
     },
     async getCommoditySearch() {
       const res = await getCommoditySearch({

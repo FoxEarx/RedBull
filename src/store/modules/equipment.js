@@ -21,10 +21,12 @@ export default {
     async getEquipment(context, index) {
       const res = await equipmentSearch(index)
       context.commit('setEquipment', res.data)
+
     },
     async getNumEquipment(context, id) {
       const res = await equipmentSearch('', id)
       context.commit('setEquipment', res.data)
+
     },
     async getDeviceType(context, id, val) {
       const res = await addEquipmentType(id, 10, val)
