@@ -45,8 +45,8 @@ export function getRoleList() {
 
 /**
  * 上传头像
- * @param {*} fileName
- * @returns
+ * @param {*} fileName 
+ * @returns 
  */
 export function updatImg(fileName) {
   return request({
@@ -61,8 +61,8 @@ export function updatImg(fileName) {
 
 /**
  * 新增人员
- * @param {*} params
- * @returns
+ * @param {*} data 
+ * @returns 
  */
 export function addPersonApi(data) {
   return request({
@@ -86,8 +86,9 @@ export function delPersonApi(id) {
 
 /**
  * 编辑人员
- * @param {*} id
- * @returns
+ * @param {*} data 
+ * @param {*} id 
+ * @returns 
  */
 export function editPersonApi(data, id) {
   return request({
@@ -117,5 +118,43 @@ export function getUserWorkCount(params) {
   return request({
     url: '/task-service/task/userWork',
     params,
+  })
+}
+
+/**
+ * 获取当时工单汇总信息(人员统计头部信息)
+ * @param {*} start
+ * @param {*} end
+ * @returns
+ */
+export function getTaskReportInfo(start, end) {
+  return request({
+    url: `/task-service/task/taskReportInfo/${start}/${end}`,
+  })
+}
+
+/**
+ * 工单状态统计
+ * @param {*} start
+ * @param {*} end
+ * @returns
+ */
+export function getCollectReport(start, end) {
+  return request({
+    url: `/task-service/task/collectReport/${start}/${end}`,
+  })
+}
+
+/**
+ * 人员排名
+ * @param {*} start
+ * @param {*} end
+ * @param {*} isRepair
+ * @param {*} regionId
+ * @returns
+ */
+export function getUserWorkTop10(start, end, isRepair, regionId) {
+  return request({
+    url: `/task-service/task/userWorkTop10/${start}/${end}/${isRepair}/${regionId}`,
   })
 }
