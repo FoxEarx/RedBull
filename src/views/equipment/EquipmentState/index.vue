@@ -7,16 +7,54 @@
         :table="table"
         :width="'280px'"
         @clickList="clickList"
-        @selectionChange="selectionChange"
       >
         <template #operation>
-          <el-button type="text">查看详情</el-button>
+          <el-button type="text" @click="SalesDetails">查看详情</el-button>
         </template></List
       >
+      <el-dialog
+        title="设备详情"
+        :visible.sync="dialogVisible"
+        width="50%"
+        :before-close="handleClose"
+      >
+        <div class="aisle">
+          <div class="aisle_header">
+            <ul>
+              <li>销售量：{{ salesNum }}个</li>
+              <li>销售额：{{ money }}元</li>
+              <li>补货次数：{{ replenishmentNum }}次</li>
+              <li>维修次数：{{ maintenanceNum }}次</li>
+            </ul>
+            <p>商品销量（月）</p>
+            <div>
+              <el-row v-if="isShow">
+                <el-col
+                  :span="6"
+                  v-for="(item, index) in CommoditSales"
+                  :key="index"
+                  ><div class="grid-content bg-purple">
+                    {{ item.skuName }}
+                    ：{{ item.count }}
+                  </div></el-col
+                >
+              </el-row>
+              <div v-if="!isShow" class="noSP">{{ CommoditSales }}</div>
+            </div>
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
       <Paging
         @nextClick="nextClick"
         @prevClick="prevClick"
         @changeCount="changeCount"
+        :total="total"
       ></Paging>
     </div>
   </div>
@@ -27,10 +65,18 @@ import mainSearch from '@/components/T-components/mainSearch'
 import Paging from '@/components/T-components/paging'
 import List from '@/components/T-components/List'
 import Add from '@/components/T-components/Add'
+import {
+  SalesDetailsNum,
+  SalesDetailsMoney,
+  replenishmentNum,
+  maintenanceNum,
+  CommoditSales,
+} from '@/api'
 
 export default {
   data() {
     return {
+      total: '',
       table: [
         { prop: 'innerCode', label: '设备编号' },
         { prop: 'taskType', label: '设备型号' },
@@ -38,9 +84,18 @@ export default {
         { prop: 'ownerName', label: '运营状态' },
         { prop: 'vmStatus', label: '设备状态' },
       ],
+      dialogVisible: false,
       tableData: [],
       number: 1,
       index: 1,
+      ListItemInfo: [],
+      ListId: 0,
+      salesNum: 0,
+      money: 0,
+      replenishmentNum: 0,
+      maintenanceNum: 0,
+      CommoditSales: '',
+      isShow: false,
     }
   },
 
@@ -50,6 +105,9 @@ export default {
   },
 
   methods: {
+    handleClose(done) {
+      done()
+    },
     clickList(row) {
       this.ListItemInfo = row
       if (row.index <= 10) {
@@ -62,6 +120,7 @@ export default {
       }
     },
     getList() {
+      this.total = this.$store.state.equipment.AllEquipment.totalCount
       this.number = 1
       const list = []
       this.$store.state.equipment.AllEquipment.currentPageRecords.forEach(
@@ -103,10 +162,67 @@ export default {
       await this.$store.dispatch('equipment/getEquipment', this.index)
       this.getList()
     },
-    selectionChange() {},
     async search(value) {
       await this.$store.dispatch('equipment/getNumEquipment', value)
       this.getList()
+    },
+    async SalesDetails() {
+      setTimeout(async () => {
+        this.dialogVisible = true
+        const data = {
+          // partnerId:
+          //   this.$store.state.equipment.AllEquipment.currentPageRecords[
+          //     this.ListId
+          //   ].ownerId,
+          start: '2022-08-01 00:00:00',
+          end: '2022-08-09 23:59:59',
+          innerCode:
+            this.$store.state.equipment.AllEquipment.currentPageRecords[
+              this.ListId
+            ].innerCode,
+        }
+        const Num = await SalesDetailsNum(data)
+        const Money = await SalesDetailsMoney(data)
+        const replenishment = await replenishmentNum(
+          data.innerCode,
+          '2022-08-01',
+          '2022-08-09',
+        )
+        const maintenance = await maintenanceNum(
+          data.innerCode,
+          '2022-08-01',
+          '2022-08-09',
+        )
+        const Commodit = await CommoditSales(
+          data.innerCode,
+          '2022-08-01',
+          '2022-08-09',
+        )
+        let s = ''
+        if (Money.data === '0') {
+          s = Money.data
+        } else {
+          for (let i = 1; i < Money.data.length; i++) {
+            if (i > 4) {
+              s += '.'
+            }
+            s += Money.data[i]
+          }
+        }
+        this.salesNum = Num.data
+        this.money = s
+        this.replenishmentNum = replenishment.data
+        this.maintenanceNum = maintenance.data
+        if (Commodit.data.length === 0) {
+          this.isShow = false
+          this.CommoditSales = '当前设备未销售商品'
+        } else {
+          this.isShow = true
+          this.CommoditSales = Commodit.data
+        }
+
+        console.log(this.CommoditSales)
+      })
     },
   },
   components: {
@@ -118,7 +234,10 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
+* {
+  list-style-type: none;
+}
 .Main {
   padding: 20px 15px 19px 17px;
   background-color: #fff;
@@ -140,5 +259,37 @@ export default {
     border: none;
     color: #655b56 !important;
   }
+
+  .aisle {
+    .aisle_header {
+      margin: 0 50px;
+      .el-row {
+        border-top: 1px solid #d8dde3;
+        border-left: 1px solid #d8dde3;
+      }
+      .el-col-6 {
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        border-right: 1px solid #d8dde3;
+        border-bottom: 1px solid #d8dde3;
+      }
+      .noSP {
+        font-size: 16px;
+        text-align: center;
+      }
+      ul {
+        height: 54px;
+        background-color: #f4f6fb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 40px;
+      }
+    }
+  }
+}
+/deep/.el-dialog__body {
+  padding: 0;
 }
 </style>

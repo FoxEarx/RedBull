@@ -17,13 +17,22 @@ export function equipmentSearch(index, id) {
  * 新增售货机类型获取
  * @returns promise
  */
-export function addEquipmentType() {
+export function addEquipmentType(pageIndex, pageSize, name) {
   return request({
     url: '/vm-service/vmType/search',
     params: {
-      pageIndex: 1,
-      pageSize: 1000000,
+      pageIndex,
+      pageSize,
+      name,
     },
+  })
+}
+
+export function addEquipmentModel(data) {
+  return request({
+    url: '/vm-service/vmType',
+    method: 'POST',
+    data,
   })
 }
 /**
@@ -112,5 +121,67 @@ export function applicationStrategy(innerCodeLists, policyId) {
       innerCodeList: [...innerCodeLists],
       policyId,
     },
+  })
+}
+
+/**
+ * 售货详情
+ * @param {*} partnerId
+ * @param {*} start
+ * @param {*} end
+ * @returns promise
+ */
+export function SalesDetailsNum(params) {
+  return request({
+    url: `/order-service/report/orderCount`,
+    params,
+  })
+}
+
+/**
+ * 销售金额
+ * @param {*} params
+ * @returns
+ */
+export function SalesDetailsMoney(params) {
+  return request({
+    url: `/order-service/report/orderAmount`,
+    params,
+  })
+}
+
+/**
+ * 补货次数
+ * @param {*} params
+ * @returns
+ */
+export function replenishmentNum(innerCode, start, end) {
+  return request({
+    url: `/task-service/task/supplyCount/${innerCode}/${start}/${end}`,
+  })
+}
+
+/**
+ * 维修次数
+ * @param {*} innerCode
+ * @param {*} start
+ * @param {*} end
+ * @returns
+ */
+export function maintenanceNum(innerCode, start, end) {
+  return request({
+    url: `/task-service/task/repairCount/${innerCode}/${start}/${end}`,
+  })
+}
+/**
+ * 商品销量
+ * @param {*} innerCode
+ * @param {*} start
+ * @param {*} end
+ * @returns
+ */
+export function CommoditSales(innerCode, start, end) {
+  return request({
+    url: `/order-service/report/skuCollect/${innerCode}/${start}/${end}`,
   })
 }

@@ -38,7 +38,7 @@ export default {
   props: {
     firstInput: {
       type: String,
-      required: true,
+      default: '查询编号',
     },
     TwoInput: { type: Boolean, default: false },
   },
