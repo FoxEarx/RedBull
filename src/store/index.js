@@ -5,8 +5,12 @@ import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
 import repair from './modules/repair'
+
+import person from './modules/person'
 import createVuexPersisted from 'vuex-persistedstate'
 import equipment from './modules/equipment'
+import order from './modules/order'
+import location from './modules/location'
 
 Vue.use(Vuex)
 
@@ -16,7 +20,10 @@ const store = new Vuex.Store({
     settings,
     user,
     repair,
+    person,
     equipment,
+    order,
+    location,
   },
   getters,
   plugins: [

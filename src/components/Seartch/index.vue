@@ -3,10 +3,14 @@
     <el-card class="box-card" shadow="never" :body-style="{ display: 'flex' }">
       <div class="input">
         <span>{{ title + ':' }}</span>
-        <el-input v-model="input" placeholder="请输入"></el-input>
+        <el-input v-model.trim="input" placeholder="请输入"></el-input>
       </div>
       <slot />
-      <Button icon="el-icon-search" text="查询"></Button>
+      <Button
+        icon="el-icon-search"
+        text="查询"
+        @click.native="$emit('searchArea', input)"
+      ></Button>
     </el-card>
   </div>
 </template>
