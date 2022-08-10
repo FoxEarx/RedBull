@@ -109,7 +109,11 @@ import mainSearch from '@/components/T-components/mainSearch'
 import Paging from '@/components/T-components/paging'
 import List from '@/components/T-components/List'
 import Add from '@/components/T-components/Add'
-import { addEquipmentModel } from '@/api'
+import {
+  addEquipmentModel,
+  changeEquipmentModel,
+  delEquipmentModel,
+} from '@/api'
 export default {
   data() {
     return {
@@ -145,6 +149,7 @@ export default {
       ListItemInfo: [],
       ListId: 0,
       dialogVisible1: false,
+      add: false,
     }
   },
 
@@ -218,28 +223,52 @@ export default {
       this.tableData = list
       console.log(this.tableData)
     },
-    open() {
+    async open() {
+      // try {
+      //   const id =
+      //     this.$store.state.equipment.DeviceType.currentPageRecords[this.ListId]
+      //       .typeId
+      //   await delEquipmentModel(id)
+      //   this.$message.success('删除成功')
+      //   await this.$store.dispatch('equipment/getDeviceType', this.index)
+      //   this.getList()
+      // } catch (error) {
       this.$notify({
         title: '提示',
         message: '演示系统，不支持此操作',
         type: 'warning',
       })
+      // }
     },
     addEquipment() {
       this.dialogVisible1 = true
-      this.layerHeader = '操作成功'
+      this.add = true
+      this.layerHeader = '新增设备类型'
     },
     closeAdd() {
       this.dialogVisible1 = false
+      this.add = false
       this.$refs.formAdd.resetFields()
     },
     async tureaddEquipment() {
       await this.$refs.formAdd.validate()
-      await addEquipmentModel(this.formAdd)
-      this.$message.success('新增成功')
+      if (this.add) {
+        await addEquipmentModel(this.formAdd)
+        this.$message.success('新增成功')
+        await this.$store.dispatch('equipment/getDeviceType', this.index)
+        this.getList()
+      } else {
+        const id =
+          this.$store.state.equipment.DeviceType.currentPageRecords[this.ListId]
+            .typeId
+        await changeEquipmentModel(this.formAdd, id)
+        this.$message.success('修改成功')
+        await this.$store.dispatch('equipment/getDeviceType', this.index)
+        this.getList()
+      }
+
       this.dialogVisible1 = false
-      await this.$store.dispatch('equipment/getDeviceType', this.index)
-      this.getList()
+      this.add = false
     },
     async nextClick() {
       this.index++

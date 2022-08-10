@@ -27,7 +27,73 @@ export function addEquipmentType(pageIndex, pageSize, name) {
     },
   })
 }
-
+/**
+ * 修改售货机
+ * @param {*} data
+ * @param {*} id
+ * @returns
+ */
+export function changeEquipmentModel(data, id) {
+  return request({
+    url: `/vm-service/vmType/${id}`,
+    method: 'PUT',
+    data,
+  })
+}
+/**
+ * 商品搜索
+ * @param {*} pageIndex
+ * @param {*} pageSize
+ * @returns
+ */
+export function SearchSku(pageIndex, pageSize, skuName) {
+  return request({
+    url: '/vm-service/sku/search',
+    params: {
+      pageIndex,
+      pageSize,
+      skuName,
+    },
+  })
+}
+/**
+ * top10商品
+ * @param {*} innerCode
+ * @returns
+ */
+export function businessTop10(innerCode) {
+  return request({
+    url: `/vm-service/sku/businessTop10/${innerCode}`,
+  })
+}
+/**
+ * 获取售货机货道详情
+ * @param {*} data
+ * @param {*} id
+ * @returns
+ */
+export function AisleDetails(innerCode) {
+  return request({
+    url: `/vm-service/channel/channelList/${innerCode}`,
+  })
+}
+/**
+ * 删除售货机
+ * @param {*} data
+ * @param {*} id
+ * @returns
+ */
+export function delEquipmentModel(id) {
+  return request({
+    url: `/vm-service/vmType/${id}`,
+    method: 'DELETE',
+  })
+}
+/**
+ * 新增售货机
+ * @param {*} data
+ * @returns
+ */
 export function addEquipmentModel(data) {
   return request({
     url: '/vm-service/vmType',
