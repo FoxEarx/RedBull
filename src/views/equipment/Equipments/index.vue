@@ -102,6 +102,7 @@
         :dialogVisibleHD="dialogVisibleHD"
         @closeAdd="closeAdd"
         :ListId="ListId"
+        :AisleDetails="AisleDetails"
       ></Aisle>
       <!-- 修改商品信息弹层 -->
       <ChangeEquipments
@@ -187,6 +188,7 @@ import {
   cancleStrategy,
   AllStrategy,
   applicationStrategy,
+  AisleDetails,
 } from '@/api'
 
 export default {
@@ -235,6 +237,14 @@ export default {
           { required: true, message: '请选择策略', trigger: 'change' },
         ],
       },
+      AisleDetails: {
+        Aisle1: [],
+        Aisle2: [],
+        Aisle3: [],
+        Aisle4: [],
+        Aisle5: [],
+        Aisle6: [],
+      },
     }
   },
 
@@ -245,8 +255,26 @@ export default {
 
   methods: {
     aisleOpen() {
-      setTimeout(() => {
+      setTimeout(async () => {
         this.dialogVisibleHD = true
+        const { data } = await AisleDetails(this.ListItemInfo.innerCode)
+        data.forEach((item) => {
+          if (item.channelCode.substr(0, 1) === '1') {
+            this.AisleDetails.Aisle1.push(item)
+          } else if (item.channelCode.substr(0, 1) === '2') {
+            this.AisleDetails.Aisle2.push(item)
+          } else if (item.channelCode.substr(0, 1) === '3') {
+            this.AisleDetails.Aisle3.push(item)
+          } else if (item.channelCode.substr(0, 1) === '4') {
+            this.AisleDetails.Aisle4.push(item)
+          } else if (item.channelCode.substr(0, 1) === '5') {
+            this.AisleDetails.Aisle5.push(item)
+          } else if (item.channelCode.substr(0, 1) === '6') {
+            this.AisleDetails.Aisle6.push(item)
+          }
+        })
+        console.log(data)
+        console.log(this.AisleDetails.Aisle1)
       })
     },
     handleClose(done) {
