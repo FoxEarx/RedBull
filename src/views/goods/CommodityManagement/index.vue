@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- 顶部 -->
-    <el-card class="box-card" shadow="never">
+    <el-card class="Top-box-card" shadow="never">
       <el-form ref="form" :model="form" label-width="120px">
-        <el-form-item label="商品类型搜索：" class="TypeSearch">
+        <el-form-item label="商品搜索：" class="TypeSearch">
           <el-input
             v-model="form.name"
             placeholder="请输入"
@@ -35,6 +35,7 @@
         :isDelete="false"
         v-loading="loading"
         @edit="edit"
+        :pageIndex="pageIndex"
       ></Table>
 
       <div class="block">
@@ -59,13 +60,14 @@
       :EditList="EditList"
     ></CommodityManagement>
     <!-- 修改 ---------------------------------------------------------------->
-    <el-dialog
-      title="修改商品信息"
-      :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose"
-    >
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+    <el-dialog title="修改商品信息" :visible.sync="dialogVisible" width="30%">
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        label-width="120px"
+        class="form-control"
+      >
         <el-form-item label="商品名称：" prop="skuName">
           <el-input
             v-model="form.skuName"
@@ -94,6 +96,7 @@
         </el-form-item>
 
         <el-form-item label="商品类型：" prop="className">
+          <!-- prop="className" -->
           <el-select v-model="form.className" placeholder="请选择">
             <el-option
               :label="item.className"
@@ -128,7 +131,7 @@
       </el-form>
       <p class="Tips">支持拓展名：jpg、png，文件不得大于100kb</p>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="$emit('cancel')">取 消</el-button>
+        <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="onSave">确 定</el-button>
       </span>
     </el-dialog>
@@ -137,11 +140,16 @@
 </template>
 
 <script>
-import { getAllCommodity, getCommodityList } from '@/api/CommodityType'
+import {
+  getAllCommodity,
+  getCommodityList,
+  getEditComm,
+} from '@/api/CommodityType'
 import Button from '@/components/Fengjian/button.vue'
 import Addbutton from '@/components/Fengjian/Addbutton.vue'
 import Table from '@/components/Fengjian/table.vue'
 import CommodityManagement from '@/components/Fengjian/CommodityManagement.vue'
+import dayjs from 'dayjs'
 export default {
   data() {
     return {
@@ -149,14 +157,15 @@ export default {
         name: '',
       },
       // 页码数
-      pageIndex: 0,
+      // pageIndex: 0,
       index: 0,
       tableData: [],
       search: '',
-      // { prop: 'skuImage', label: '商品图片' },
+      //
       table: [
         { prop: 'skuName', label: '商品名称' },
         { prop: 'brandName', label: '品牌' },
+        { prop: 'skuImage', label: '商品图片' },
         { prop: 'unit', label: '规格' },
         { prop: 'price', label: '商品价格' },
         { prop: 'className', label: '商品类型' },
@@ -183,6 +192,8 @@ export default {
       },
       imageUrl: '',
       skuImage: '',
+      skuId: '',
+      classId: '',
       rules: {
         skuName: [{ required: true, message: '请输入商品名称', target: blur }],
         brandName: [{ required: true, message: '请输入品牌', target: blur }],
@@ -208,20 +219,28 @@ export default {
 
   methods: {
     edit(val) {
-      // console.log(val)
       this.EditList = val
-      console.log(this.EditList)
-      this.$store.dispatch('commodityType/getEditCommodity', val)
-      this.MessageShow = true
+      this.form = {
+        skuName: this.EditList.skuName,
+        brandName: this.EditList.brandName,
+        price: this.EditList.price,
+        className: this.EditList.className,
+        unit: this.EditList.unit,
+      }
+      this.imageUrl = this.EditList.skuImage
+      this.skuId = this.EditList.skuId
+      this.classId = this.EditList.classId
+      this.dialogVisible = true
+
+      console.log('EditList', this.EditList)
     },
     handleCurrentChange(val) {
       console.log(val)
       this.pageIndex = val
-      this.tableData = []
+
       this.getAllCommodity()
     },
     NewList() {
-      this.tableData = []
       this.getAllCommodity()
     },
     // 获取商品类型
@@ -245,19 +264,17 @@ export default {
     },
     Add() {
       this.MessageShow = true
-      this.NorE = 0
-      console.log(this.NorE)
     },
     // 上一页
     prevClick() {
       this.pageIndex--
-      this.tableData = []
+
       this.getAllCommodity()
     },
     // 下一页
     nextData() {
       this.pageIndex++
-      this.tableData = []
+
       this.getAllCommodity()
     },
     // 搜索查询
@@ -265,12 +282,13 @@ export default {
       this.$refs.form.validate()
       console.log(this.form.name)
       this.search = this.form.name
-      this.tableData = []
+
       this.getAllCommodity()
     },
     // 获取商品列表
     async getAllCommodity() {
       this.pageIndex === 0 ? (this.pageIndex = 1) : this.pageIndex
+      this.tableData = []
       const res = await getAllCommodity({
         pageIndex: this.pageIndex,
         pageSize: 10,
@@ -281,6 +299,7 @@ export default {
       this.totalCount = parseInt(res.data.totalCount)
       const List = res.data.currentPageRecords
       List.forEach((item) => {
+        const time = dayjs(item.createTime).format('YYYY-MM-DD hh:mm:ss')
         this.tableData.push({
           index: this.index + 1,
           skuName: item.skuName,
@@ -289,22 +308,67 @@ export default {
           unit: item.unit,
           price: item.price,
           className: item.skuClass.className,
-          createTime: item.createTime,
+          createTime: time,
+          skuId: item.skuId,
+          classId: item.skuClass.classId,
         })
       })
-      // console.log(this.tableData)
+      if (this.tableData.length > 10) {
+        this.tableData.splice(5, 10)
+      }
+    },
+    // 修改------------------------------------------------------------------------
+    async getEditComm() {
+      const res = await getEditComm({
+        skuId: this.skuId,
+        skuName: this.form.skuName,
+        skuImage: this.imageUrl,
+        price: this.form.price,
+        classId: this.classId,
+        unit: this.form.unit,
+        brandName: this.form.brandName,
+        skuId: this.skuId,
+      })
+      console.log(res)
+      res.data === true
+        ? this.$message.success('修改成功')
+        : this.$message.error('修改失败')
+      this.dialogVisible = false
+
+      this.getAllCommodity()
+    },
+    onSave() {
+      this.getEditComm()
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
     },
   },
 }
 </script>
 
 <style scoped lang="less">
+.Top-box-card {
+  .el-input {
+    width: 280px;
+  }
+}
 .el-form-item {
   margin-bottom: unset;
 }
-.el-input {
-  width: 280px;
-}
+
 .TypeSearch {
   position: relative;
   left: 0;
@@ -324,5 +388,37 @@ export default {
       margin-left: 20px;
     }
   }
+}
+.form-control {
+  width: 100%;
+  .el-form-item {
+    margin-bottom: 30px;
+  }
+}
+.avatar-uploader .el-upload {
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  border: 0.5px solid #ccc;
+  font-size: 28px;
+  color: #8c939d;
+  width: 110px;
+  height: 110px;
+  line-height: 110px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+.Tips {
+  text-align: center;
 }
 </style>

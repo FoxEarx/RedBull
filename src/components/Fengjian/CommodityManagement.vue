@@ -3,7 +3,7 @@
     title="新建商品信息"
     :visible.sync="isShow"
     width="30%"
-    :before-close="handleClose"
+    :showClose="false"
   >
     <el-form ref="form" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="商品名称：" prop="skuName">
@@ -39,7 +39,7 @@
             :label="item.className"
             v-for="item in this.$store.state.commodityType.ClassName"
             :key="item.classId"
-            :value="item.classId"
+            :value="item.className"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -102,7 +102,14 @@ export default {
       rules: {
         skuName: [{ required: true, message: '请输入商品名称', target: blur }],
         brandName: [{ required: true, message: '请输入品牌', target: blur }],
-        price: [{ required: true, message: '请输入商品价格', target: blur }],
+        price: [
+          { required: true, message: '请输入商品价格', target: 'change' },
+          {
+            pattern:
+              /(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/,
+            message: '不能为负数',
+          },
+        ],
         className: [
           { required: true, message: '请输入商品类型', target: blur },
         ],
@@ -118,11 +125,19 @@ export default {
   computed: {},
   methods: {
     async getAddComm() {
+      // console.log(this.$store.state.commodityType.ClassName)
+      const List = this.$store.state.commodityType.ClassName
+      console.log(List)
+      console.log(this.form.className)
+      const Id = List.filter((item) => {
+        return item.className == this.form.className
+      })
+      // console.log(Id[0].classId)
       const res = await getAddComm({
         skuName: this.form.skuName,
         skuImage: this.skuImage,
         price: this.form.price,
-        classId: this.form.className,
+        classId: Id[0].classId,
         unit: this.form.unit,
         brandName: this.form.brandName,
       })
@@ -132,6 +147,7 @@ export default {
         : this.$message.error('新增失败')
       this.$emit('cancel')
       this.$emit('NewList')
+      this.$refs.form.resetFields()
       this.form = {
         skuName: '',
         brandName: '',
@@ -139,7 +155,7 @@ export default {
         className: '',
         unit: '',
       }
-      this.skuImage = ''
+      this.imageUrl = ''
     },
     onSave() {
       this.$refs.form.validate()
@@ -160,13 +176,6 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M
-    },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then((_) => {
-          done()
-        })
-        .catch((_) => {})
     },
   },
 }

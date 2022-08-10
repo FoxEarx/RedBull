@@ -6,16 +6,25 @@
       type="index"
       label="序号"
       width="80"
+      :index="calcIndex"
     />
     <el-table-column
       v-for="(item, index) in table"
       :key="index"
       :label="item.label"
-      :prop="item.prop"
       :style="{ width: isWidth }"
     >
+      <template slot-scope="{ row }">
+        <div v-if="item.prop === 'skuImage'">
+          <img :src="row[item.prop]" width="50" height="50" alt="" />
+        </div>
+        <template v-else>
+          {{ row[item.prop] }}
+        </template>
+      </template>
     </el-table-column>
-    <el-table-column v-if="isImage" label="商品图片">
+
+    <!-- <el-table-column v-if="isImage" label="商品图片">
       <template scope="scope">
         <img
           :src="scope.row.skuImage"
@@ -24,7 +33,7 @@
           class="head_pic"
         />
       </template>
-    </el-table-column>
+    </el-table-column> -->
     <el-table-column
       label="操作"
       class="operation"
@@ -81,6 +90,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    pageIndex: {
+      type: Number,
+      default: 1,
+    },
+    pageSize: {
+      type: Number,
+      default: 10,
+    },
   },
   data() {
     return {
@@ -88,6 +105,9 @@ export default {
     }
   },
   methods: {
+    calcIndex(index) {
+      return (this.pageIndex - 1) * this.pageSize + index + 1
+    },
     async getDeletCommodity() {
       const res = await getDeletCommodity(this.classId)
       console.log(res)

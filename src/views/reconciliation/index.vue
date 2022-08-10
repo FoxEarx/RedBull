@@ -473,7 +473,7 @@ export default {
   .choice {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: flex-start;
   }
   .el-form-item {
     margin-bottom: unset;

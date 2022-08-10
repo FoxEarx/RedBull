@@ -81,7 +81,7 @@
       </el-form>
 
       <!-- 区域详情查看 -->
-      <el-form :model="formData" v-else>
+      <el-form v-else :model="formData" :rules="formRules">
         <el-form-item label="区域名称:">{{ columnInfo.name }}</el-form-item>
         <el-form-item label="包含点位:">
           <NList
@@ -223,16 +223,18 @@ export default {
     },
     // 点击确定 更新/添加 区域信息
     async editAreaInfo() {
-      await this.$refs.form.validate()
-      if (this.formData.id) {
-        await editAreaInfo(this.formData)
-        this.$message.success('修改成功')
-      } else {
-        await addArea(this.formData)
-        this.$message.success('添加成功')
-      }
-      this.onClose()
-      this.getLocationList(this.areaInfo.pageIndex)
+      try {
+        await this.$refs.form.validate()
+        if (this.formData.id) {
+          await editAreaInfo(this.formData)
+          this.$message.success('修改成功')
+        } else {
+          await addArea(this.formData)
+          this.$message.success('添加成功')
+        }
+        this.onClose()
+        this.getLocationList(this.areaInfo.pageIndex)
+      } catch (error) {}
     },
     // 点击删除当前区域信息
     async delAreaInfo() {
@@ -252,12 +254,13 @@ export default {
     // 关闭弹窗
     onClose() {
       this.dialogVisible = false
-      setTimeout(() => {
-        this.formData = {
-          regionName: '',
-          remark: '',
-        }
-      }, 200)
+      if (this.$refs.form !== undefined) {
+        this.$refs.form.resetFields()
+      }
+      this.formData = {
+        regionName: '',
+        remark: '',
+      }
     },
   },
 
