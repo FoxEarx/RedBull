@@ -50,21 +50,24 @@
       </List>
       <!-- 分页 -->
       <div class="block">
-        <el-pagination
-          :page-size="100"
+        <turn-page
+          :pageNum="+$store.state.repair.AllList.totalCount"
+          :currentPage="this.index"
+          :sumPage="Math.ceil($store.state.repair.AllList.totalCount / 10)"
           :total="+$store.state.repair.AllList.totalCount"
-          @next-click="nextClick"
-          @prev-click="prevClick"
-        >
-        </el-pagination>
+          @prevClick="prevClick"
+          @nextClick="nextClick"
+          v-show="this.tableData.length !== 1 && this.tableData.length !== 0"
+        ></turn-page>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import mainSearch from '@/components/mainSearch'
-import List from '@/components/List'
+import turnPage from '@/components/fanzhiyi/turnPage'
+import mainSearch from './component/search/index.vue'
+import List from './component/list/index.vue'
 import dayjs from 'dayjs'
 export default {
   data() {
@@ -113,7 +116,7 @@ export default {
         })
       })
       this.tableData = list
-      console.log(this.tableData)
+      // console.log(this.tableData)
     },
     async nextClick() {
       this.index++
@@ -129,6 +132,7 @@ export default {
   components: {
     mainSearch,
     List,
+    turnPage,
   },
 }
 </script>
