@@ -162,6 +162,9 @@ export default {
           classId: item.classId,
         })
       })
+      if (this.tableData.length > 10) {
+        this.tableData.splice(5, 10)
+      }
       // const ClassNameList = this.tableData
       // ClassNameList.forEach((item) => {
       //   this.className.push(item.className)
