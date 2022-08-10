@@ -3,7 +3,7 @@
     <!-- 顶部 -->
     <el-card class="Top-box-card" shadow="never">
       <el-form ref="form" :model="form" label-width="120px">
-        <el-form-item label="商品类型搜索：" class="TypeSearch">
+        <el-form-item label="商品搜索：" class="TypeSearch">
           <el-input
             v-model="form.name"
             placeholder="请输入"
@@ -35,6 +35,7 @@
         :isDelete="false"
         v-loading="loading"
         @edit="edit"
+        :pageIndex="pageIndex"
       ></Table>
 
       <div class="block">
@@ -95,6 +96,7 @@
         </el-form-item>
 
         <el-form-item label="商品类型：" prop="className">
+          <!-- prop="className" -->
           <el-select v-model="form.className" placeholder="请选择">
             <el-option
               :label="item.className"
@@ -147,6 +149,7 @@ import Button from '@/components/Fengjian/button.vue'
 import Addbutton from '@/components/Fengjian/Addbutton.vue'
 import Table from '@/components/Fengjian/table.vue'
 import CommodityManagement from '@/components/Fengjian/CommodityManagement.vue'
+import dayjs from 'dayjs'
 export default {
   data() {
     return {
@@ -154,14 +157,15 @@ export default {
         name: '',
       },
       // 页码数
-      pageIndex: 0,
+      // pageIndex: 0,
       index: 0,
       tableData: [],
       search: '',
-      // { prop: 'skuImage', label: '商品图片' },
+      //
       table: [
         { prop: 'skuName', label: '商品名称' },
         { prop: 'brandName', label: '品牌' },
+        { prop: 'skuImage', label: '商品图片' },
         { prop: 'unit', label: '规格' },
         { prop: 'price', label: '商品价格' },
         { prop: 'className', label: '商品类型' },
@@ -233,11 +237,10 @@ export default {
     handleCurrentChange(val) {
       console.log(val)
       this.pageIndex = val
-      this.tableData = []
+
       this.getAllCommodity()
     },
     NewList() {
-      this.tableData = []
       this.getAllCommodity()
     },
     // 获取商品类型
@@ -261,19 +264,17 @@ export default {
     },
     Add() {
       this.MessageShow = true
-      this.NorE = 0
-      console.log(this.NorE)
     },
     // 上一页
     prevClick() {
       this.pageIndex--
-      this.tableData = []
+
       this.getAllCommodity()
     },
     // 下一页
     nextData() {
       this.pageIndex++
-      this.tableData = []
+
       this.getAllCommodity()
     },
     // 搜索查询
@@ -281,12 +282,13 @@ export default {
       this.$refs.form.validate()
       console.log(this.form.name)
       this.search = this.form.name
-      this.tableData = []
+
       this.getAllCommodity()
     },
     // 获取商品列表
     async getAllCommodity() {
       this.pageIndex === 0 ? (this.pageIndex = 1) : this.pageIndex
+      this.tableData = []
       const res = await getAllCommodity({
         pageIndex: this.pageIndex,
         pageSize: 10,
@@ -297,6 +299,7 @@ export default {
       this.totalCount = parseInt(res.data.totalCount)
       const List = res.data.currentPageRecords
       List.forEach((item) => {
+        const time = dayjs(item.createTime).format('YYYY-MM-DD hh:mm:ss')
         this.tableData.push({
           index: this.index + 1,
           skuName: item.skuName,
@@ -305,38 +308,16 @@ export default {
           unit: item.unit,
           price: item.price,
           className: item.skuClass.className,
-          createTime: item.createTime,
+          createTime: time,
           skuId: item.skuId,
           classId: item.skuClass.classId,
         })
       })
-      // console.log(this.tableData)
+      if (this.tableData.length > 10) {
+        this.tableData.splice(5, 10)
+      }
     },
     // 修改------------------------------------------------------------------------
-    // async getAddComm() {
-    //   const res = await getAddComm({
-    //     skuName: this.form.skuName,
-    //     skuImage: this.skuImage,
-    //     price: this.form.price,
-    //     classId: this.form.className,
-    //     unit: this.form.unit,
-    //     brandName: this.form.brandName,
-    //   })
-    //   console.log(res)
-    //   res.data === true
-    //     ? this.$message.success('新增成功')
-    //     : this.$message.error('新增失败')
-    //   this.$emit('cancel')
-    //   this.$emit('NewList')
-    //   this.form = {
-    //     skuName: '',
-    //     brandName: '',
-    //     price: '',
-    //     className: '',
-    //     unit: '',
-    //   }
-    //   this.skuImage = ''
-    // },
     async getEditComm() {
       const res = await getEditComm({
         skuId: this.skuId,
@@ -353,13 +334,10 @@ export default {
         ? this.$message.success('修改成功')
         : this.$message.error('修改失败')
       this.dialogVisible = false
-      this.tableData = []
+
       this.getAllCommodity()
     },
     onSave() {
-      // this.$refs.form.validate()
-      // this.skuImage = this.imageUrl
-      // this.getAddComm()
       this.getEditComm()
     },
     handleAvatarSuccess(res, file) {
@@ -376,13 +354,6 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M
-    },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then((_) => {
-          done()
-        })
-        .catch((_) => {})
     },
   },
 }
