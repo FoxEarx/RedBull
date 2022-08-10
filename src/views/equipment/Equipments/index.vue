@@ -92,11 +92,17 @@
         @selectionChange="selectionChange"
       >
         <template #operation>
-          <span class="details">货道 </span>
+          <span class="details" @click="aisleOpen">货道 </span>
           <span class="details" @click="OpenStrategy">策略 </span>
           <el-button type="text" @click="changeVm">修改</el-button>
         </template>
       </List>
+      <!-- 货道 -->
+      <Aisle
+        :dialogVisibleHD="dialogVisibleHD"
+        @closeAdd="closeAdd"
+        :ListId="ListId"
+      ></Aisle>
       <!-- 修改商品信息弹层 -->
       <ChangeEquipments
         :dialogVisibleXG="dialogVisibleXG"
@@ -159,6 +165,7 @@
         @nextClick="nextClick"
         @prevClick="prevClick"
         @changeCount="changeCount"
+        :total="total"
       ></Paging>
     </div>
   </div>
@@ -170,6 +177,7 @@ import List from '@/components/T-components/List'
 import Paging from '@/components/T-components/paging'
 import Add from '@/components/T-components/Add'
 import ChangeEquipments from './modules/change.vue'
+import Aisle from './modules/aisle.vue'
 import {
   addEquipmentType,
   addEquipmentNode,
@@ -184,6 +192,8 @@ import {
 export default {
   data() {
     return {
+      dialogVisibleHD: false,
+      total: '',
       form: {
         createUserId: this.$store.state.user.userId,
         vmType: '',
@@ -234,10 +244,16 @@ export default {
   },
 
   methods: {
+    aisleOpen() {
+      setTimeout(() => {
+        this.dialogVisibleHD = true
+      })
+    },
     handleClose(done) {
       done()
     },
     getList() {
+      this.total = this.$store.state.equipment.AllEquipment.totalCount
       this.number = 1
       const list = []
       this.$store.state.equipment.AllEquipment.currentPageRecords.forEach(
@@ -292,7 +308,7 @@ export default {
     },
     async addEquipment() {
       this.dialogVisible1 = true
-      const { data } = await addEquipmentType()
+      const { data } = await addEquipmentType(1, 10000)
       const res = await addEquipmentNode()
       this.$store.commit('equipment/setEquipmentAllPoint', res.data)
       this.AllPoint = res.data.currentPageRecords
@@ -304,6 +320,7 @@ export default {
     closeAdd() {
       this.dialogVisible1 = false
       this.dialogVisibleXG = false
+      this.dialogVisibleHD = false
     },
     changeVm() {
       this.dialogVisibleXG = true
@@ -409,6 +426,7 @@ export default {
     Paging,
     Add,
     ChangeEquipments,
+    Aisle,
   },
 }
 </script>

@@ -17,7 +17,7 @@
         <!-- <el-table-column label="图片">
           <slot name="img"></slot>
         </el-table-column> -->
-        <el-table-column label="操作" v-if="show">
+        <el-table-column label="操作" v-if="show" :width="width">
           <slot name="operation"></slot>
         </el-table-column>
       </el-table>
@@ -31,7 +31,9 @@ export default {
     return {}
   },
 
-  created() {},
+  created() {
+    this.row()
+  },
 
   methods: {
     row(row) {
@@ -55,6 +57,10 @@ export default {
     show: {
       type: Boolean,
       default: true,
+    },
+    props: {
+      tyep: String,
+      default: '',
     },
   },
 }
